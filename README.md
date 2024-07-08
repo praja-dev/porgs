@@ -1,7 +1,7 @@
 # Praja Organizations
 
-Praja Organizations (PORGS) is a software product for managing people,
-work, and discussions inside governmental, non-governmental, and community organizations.
+Praja Organizations (PORGS) is a software product for managing people, work,
+and discussions within government, non-government, and community organizations.
 
 ## Use
 
@@ -13,19 +13,28 @@ work, and discussions inside governmental, non-governmental, and community organ
 
 ## Develop
 
+[Setup](https://go.dev/doc/install) a Go development environment.
+
+Run the program
+```shell
+go run ./cmd/porgs
+```
+
 ## Deploy
 
 ## Design
 
 Overall design goals:
-- **Simple for end-user**: At all times the system should present just what the user needs.
-- **Simple for developers**: The whole system should be understandable by just one person.
-- **Simple to extend**: System should consist of the base, a required core plugin, and optional feature plugins.
-- **Simple to deploy**: System should be deployable as a single binary with zero external dependencies.
+- **Simple to use**: The system should always present only what the user needs.
+- **Simple to develop**: The entire system should be understandable by a single person.
+- **Simple to maintain**: The system should deploy as a single binary with no external dependencies.
+- **Simple to extend**: Features should be implemented as plugins atop a core system that handles essentials,
+ integrating plugins for additional functionality.
+
 
 ## Product
 
 **Background**: The initial requirements for the product are driven by the first client,
-a large government organization in Sri Lanka. The organization has a large number of 
-employees and a high rate of inter-branch transfers. However, PORGS is being designed 
-from the get go to be broadly applicable to other government and community organizations.    
+a large government organization in Sri Lanka. This organization features a significant
+number of employees and a frequent rate of inter-branch transfers. However, PORGS is being
+designed from the outset to be widely applicable to other government and community organizations.

@@ -1,0 +1,23 @@
+# Ignore everything
+*
+
+# Allow subdirectories
+!*/
+
+# Allow this .gitignore file and the ones in subdirectories
+!/.gitignore
+
+# Allow LICENSE and README files in the root directory only.
+!/LICENSE
+!/README.md
+
+# Module and checksum files
+!go.mod
+!go.sum
+
+# Root level package
+!/*.go
+
+# Main package generating the porgs command line program
+/cmd/*.go
+!/cmd/porgs/*.go
