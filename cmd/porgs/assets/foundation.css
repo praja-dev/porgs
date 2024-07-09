@@ -1,0 +1,10 @@
+/* Size everything with border-box */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Take full viewport */
+body {
+    margin: 0;
+    height: 100vh;
+}

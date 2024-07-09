@@ -21,5 +21,6 @@
 # Main package generating the porgs command line program
 /cmd/*.go
 !/cmd/porgs/*.go
+!/cmd/porgs/assets/*
 !/cmd/porgs/views/*.go.html
 !/cmd/porgs/layouts/*.go.html
