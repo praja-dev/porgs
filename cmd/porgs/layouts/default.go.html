@@ -1,0 +1,27 @@
+{{ block "default-layout" . -}}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{{ .Title }}</title>
+</head>
+<body>
+<header>
+    <nav>
+        <div><a href="/">{{ .Title }}</a></div>
+        <div></div>
+        <div><a href="/login">Login</a></div>
+    </nav>
+</header>
+{{ template "screen" . }}
+<footer>
+    <nav>
+        <div></div>
+        <div>Powered by PORGS</div>
+        <div></div>
+    </nav>
+</footer>
+</body>
+</html>
+{{- end -}}

@@ -1,6 +1,6 @@
 package porgs
 
-// AppBootConfig holds configuration required at application boot-up.
+// AppBootConfig struct holds configuration required at application boot-up.
 type AppBootConfig struct {
 	// Host to run the web server on
 	Host string

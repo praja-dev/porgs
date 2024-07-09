@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"github.com/praja-dev/porgs"
+	"html/template"
+	"io/fs"
 	"log/slog"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"regexp"
 	"strconv"
 	"sync"
 	"time"
@@ -16,6 +19,7 @@ import (
 
 func main() {
 	porgs.BootConfig = getBootConfig()
+	porgs.Templates = getTemplates()
 	run(context.Background())
 }
 
@@ -36,6 +40,48 @@ func getBootConfig() porgs.AppBootConfig {
 		Host: host,
 		Port: port,
 	}
+}
+
+func getTemplates() map[string]*template.Template {
+	tm := make(map[string]*template.Template)
+
+	// # Parse the default layout
+	layout, err := template.ParseFS(embeddedFS, "layouts/default.go.html")
+	if err != nil {
+		slog.Error("templates: parse layouts", "err", err)
+		os.Exit(1)
+	}
+
+	rgxpViewName := regexp.MustCompile(`views/(.+)\.go\.html`)
+
+	// # Parse all views in the main package
+	viewFiles, err := fs.Glob(embeddedFS, "views/*.go.html")
+	if err != nil {
+		slog.Error("templates: parse views", "err", err)
+		os.Exit(1)
+	}
+	for _, viewFile := range viewFiles {
+		viewNameMatches := rgxpViewName.FindStringSubmatch(viewFile)
+		if viewNameMatches == nil {
+			slog.Error("templates: parse view: incorrect file name", "file", viewFile)
+			os.Exit(1)
+		}
+		viewName := viewNameMatches[1]
+
+		tp, err := layout.Clone()
+		if err != nil {
+			slog.Error("templates: clone layout", "err", err)
+			os.Exit(1)
+		}
+		tp, err = tp.ParseFS(embeddedFS, viewFile)
+		if err != nil {
+			slog.Error("templates: parse view", "view", viewName, "err", err)
+			os.Exit(1)
+		}
+		tm[viewName] = tp
+	}
+
+	return tm
 }
 
 func run(ctx context.Context) {
