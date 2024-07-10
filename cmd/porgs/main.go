@@ -19,6 +19,7 @@ import (
 
 func main() {
 	porgs.BootConfig = getBootConfig()
+	porgs.SiteConfig = getSiteConfig()
 	porgs.Templates = getTemplates()
 	run(context.Background())
 }
@@ -42,11 +43,25 @@ func getBootConfig() porgs.AppBootConfig {
 	}
 }
 
+func getSiteConfig() porgs.AppSiteConfig {
+	return porgs.AppSiteConfig{
+		Title:       "PORGS",
+		Description: "A website powered by Praja Organizations (PORGS)",
+	}
+
+}
+
 func getTemplates() map[string]*template.Template {
 	tm := make(map[string]*template.Template)
 
+	fm := template.FuncMap{
+		"cfg": func() porgs.AppSiteConfig {
+			return porgs.SiteConfig
+		},
+	}
+
 	// # Parse the default layout
-	layout, err := template.ParseFS(embeddedFS, "layouts/default.go.html")
+	layout, err := template.New("layout").Funcs(fm).ParseFS(embeddedFS, "layouts/default.go.html")
 	if err != nil {
 		slog.Error("templates: parse layouts", "err", err)
 		os.Exit(1)

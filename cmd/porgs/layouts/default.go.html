@@ -1,17 +1,18 @@
+<!--suppress HtmlUnknownTarget -->
 {{ block "default-layout" . -}}
 <!DOCTYPE html>
-<!--suppress HtmlUnknownTarget, HtmlUnknownTarget -->
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>{{ .Title }}</title>
+    <title>{{ or .Title cfg.Title }}</title>
+    <meta name="description" content="{{ cfg.Description }}">
     <link rel="stylesheet" href="/a/app.css">
 </head>
 <body>
 <header>
     <nav>
-        <div><a href="/">{{ .Title }}</a></div>
+        <div><a href="/">{{ cfg.Title }}</a></div>
         <div></div>
         <div><a href="/login">Login</a></div>
     </nav>

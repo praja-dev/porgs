@@ -11,3 +11,9 @@ type AppBootConfig struct {
 	// DSN (Data Source Name) for the database connection
 	DSN string
 }
+
+// AppSiteConfig struct holds the website configuration.
+type AppSiteConfig struct {
+	Title       string
+	Description string
+}
