@@ -6,7 +6,7 @@ type User struct {
 	Roles []Role
 }
 
-// Capability represents some discrete user-facing capability of the system.
+// Capability represents a unit of user-facing capability in the system.
 // Access control operates at the level of Capabilities.
 type Capability struct {
 	Name        string
@@ -14,7 +14,7 @@ type Capability struct {
 }
 
 // Role is a set of capabilities.
-// The set of roles assigned to a User determines what the system permits that user to use.
+// The set of roles assigned to a User determines what the system permits that user to access.
 type Role struct {
 	Name         string
 	DisplayName  string

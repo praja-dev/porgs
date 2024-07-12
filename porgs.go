@@ -23,21 +23,23 @@ type AppSiteConfig struct {
 	Description string
 }
 
-// Plugin interface must be implemented by all PORGS plugins
+// Plugin interface for PORGS plugin integration.
 type Plugin interface {
-	// GetName is the canonical name of this plugin
+	// GetName gives the canonical name of this plugin.
 	GetName() string
 
-	// GetDependencies returns the list of other plugins required by this plugin
+	// GetDependencies declares plugins that this one depends on.
 	GetDependencies() []string
 
-	// GetCapabilities returns the list of capabilities provided by this plugin
+	// GetCapabilities lists the capabilities provided by this plugin.
 	GetCapabilities() []Capability
 
-	// GetSuggestedRoles returns the list of roles suggested by this plugin
+	// GetSuggestedRoles recommends role groupings for the plugin's capabilities.
 	GetSuggestedRoles() []Role
 
+	// GetFS gives the file system with HTML templates (views/) and static assets (assets/).
 	GetFS() embed.FS
 
+	// GetHandler returns the plugin's HTTP router.
 	GetHandler() *http.ServeMux
 }
