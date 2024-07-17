@@ -1,0 +1,25 @@
+{{ block "main-login" . }}
+    {{- template "default-layout" . }}
+{{ end }}
+
+{{ block "screen" . }}
+    <main>
+        <h3>Login</h3>
+        <form action="/login" method="post">
+            <fieldset>
+                <legend>Please enter your username and password</legend>
+                <div>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required aria-required="true">
+                </div>
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required aria-required="true">
+                </div>
+                <div>
+                    <button type="submit">Login</button>
+                </div>
+            </fieldset>
+        </form>
+    </main>
+{{ end }}
