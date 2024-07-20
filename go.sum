@@ -1,2 +1,6 @@
 github.com/eatonphil/gosqlite v0.9.0 h1:T6FBPegC4DG0QflzUgOEUvak1+/oHUmJXtc2t/pGJPU=
 github.com/eatonphil/gosqlite v0.9.0/go.mod h1:BQrvW3lTI1o91VIArLBHqbRX8TuWeWmDoFQOGLnJ87o=
+golang.org/x/crypto v0.25.0 h1:ypSNr+bnYL2YhwoMt2zPxHFmbAN1KZs/njMG3hxUp30=
+golang.org/x/crypto v0.25.0/go.mod h1:T+wALwcMOSE0kXgUAnPAHqTLW+XHgcELELW8VaDgm/M=
+golang.org/x/sys v0.22.0 h1:RI27ohtqKCnwULzJLqkv897zojh5/DwS/ENaMzUOaWI=
+golang.org/x/sys v0.22.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=

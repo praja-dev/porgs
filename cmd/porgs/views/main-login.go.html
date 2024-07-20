@@ -10,12 +10,15 @@
                 <legend>Please enter your username and password</legend>
                 <div>
                     <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required aria-required="true">
+                    <input type="text" id="username" name="username" value="{{.Usr}}" required aria-required="true">
                 </div>
                 <div>
                     <label for="password">Password:</label>
                     <input type="password" id="password" name="password" required aria-required="true">
                 </div>
+                <p>
+                    {{.Msg}}
+                </p>
                 <div>
                     <button type="submit">Login</button>
                 </div>
