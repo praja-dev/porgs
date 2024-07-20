@@ -1,0 +1,11 @@
+{{ block "main-error" . }}
+    {{- template "default-layout" . }}
+{{ end }}
+
+{{ block "screen" .Data }}
+    <main>
+        <h3>{{.Title}}</h3>
+        <p>{{.Msg}}</p>
+        <p>Go <a href="{{.BackURL}}">back</a>.</p>
+    </main>
+{{ end}}

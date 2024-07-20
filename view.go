@@ -37,13 +37,13 @@ func RenderView(w http.ResponseWriter, view View) {
 func ShowDefaultErrorPage(w http.ResponseWriter) {
 	ShowErrorPage(w, ErrorPage{
 		Msg:     "There was an unexpected error.",
-		Title:   "ShowDefaultErrorPage | PORGS",
+		Title:   "Error",
 		BackURL: "/"})
 }
 
 // ShowErrorPage shows an error page with the given error details.
 func ShowErrorPage(w http.ResponseWriter, data ErrorPage) {
-	RenderView(w, View{Name: "main-error", Title: "ShowDefaultErrorPage | PORGS", Data: data})
+	RenderView(w, View{Name: "main-error", Title: "Error | PORGS", Data: data})
 }
 
 // ErrorPage struct holds data to render an error page with.
