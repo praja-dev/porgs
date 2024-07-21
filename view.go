@@ -12,6 +12,9 @@ type View struct {
 	// Title is the display name of the view
 	Title string
 
+	// User is the user to render the view for
+	User User
+
 	// Data is the data to render the view with
 	Data interface{}
 }

@@ -14,7 +14,13 @@
     <nav>
         <div><a href="/">{{ cfg.Title }}</a></div>
         <div></div>
-        <div><a href="/login">Login</a></div>
+        <div>
+            {{- if .User.Name}}
+            <a href="/logout">Logout {{ .User.Name }}</a>
+            {{- else }}
+            <a href="/login">Login</a>
+            {{- end }}
+        </div>
     </nav>
 </header>
 {{ template "screen" .Data }}
