@@ -134,7 +134,7 @@ func handleLoginPost() http.Handler {
 		http.SetCookie(w, &cookie)
 
 		// # Redirect to the home page
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	})
 }
 
@@ -155,4 +155,22 @@ func pwdMatch(plainPwd string, pwdField string, saltField string) (bool, error) 
 	}
 
 	return true, nil
+}
+
+func handleLogout() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// # Extract user from request context
+
+		// # Delete this user session from db
+
+		// # Delete cookie
+
+		// # Redirect to login page
+
+		porgs.ShowErrorPage(w, porgs.ErrorPage{
+			Title:   "Not implemented",
+			Msg:     "This feature is under development.",
+			BackURL: "/",
+		})
+	})
 }

@@ -2,7 +2,7 @@
     {{- template "default-layout" . }}
 {{ end }}
 
-{{ block "screen" .Data }}
+{{ define "screen" }}
     <main>
         <h3>{{.Title}}</h3>
         <p>{{.Msg}}</p>

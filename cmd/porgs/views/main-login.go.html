@@ -2,7 +2,7 @@
     {{- template "default-layout" . }}
 {{ end }}
 
-{{ block "screen" . }}
+{{ define "screen" }}
     <main>
         <h3>Login</h3>
         <form action="/login" method="post">

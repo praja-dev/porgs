@@ -27,14 +27,16 @@ var authUserAssignRole = porgs.Capability{
 	Description: "Assign a role to a user",
 }
 
-func (p *Plugin) GetCapabilities() []porgs.Capability {
+// getCapabilities gives the list of capabilities exposed by the main package
+func getCapabilities() []porgs.Capability {
 	return []porgs.Capability{
 		authLogin, authLogout, authPwdReset,
 		authUserCreate, authUserAssignRole,
 	}
 }
 
-func (p *Plugin) GetSuggestedRoles() []porgs.Role {
+// getSuggestedRoles gives the roles suggested for organizing the capabilities in main package
+func getSuggestedRoles() []porgs.Role {
 	return []porgs.Role{
 		{
 

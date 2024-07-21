@@ -1,0 +1,13 @@
+{{ block "main-home" . }}
+    {{- template "default-layout" . }}
+{{ end }}
+
+{{ define "screen" }}
+    <main>
+        <h3>Core</h3>
+        <p>Enabled PORGS plugins:</p>
+        <ul>{{ range $name, $plugin := .Plugins }}
+            <li><a href="/{{$name}}">{{$name}}</a></li>
+        {{ end }}</ul>
+    </main>
+{{ end}}

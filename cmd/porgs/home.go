@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-func handleRoot() http.Handler {
+func handleHome() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		porgs.RenderView(w, porgs.View{
-			Name:  "main-root",
-			Title: "Welcome | " + porgs.SiteConfig.Title})
+			Name:  "main-home",
+			Title: "Home | " + porgs.SiteConfig.Title})
 	})
 }

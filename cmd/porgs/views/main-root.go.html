@@ -2,9 +2,9 @@
     {{- template "default-layout" . }}
 {{ end }}
 
-{{ block "screen" . }}
-<main>
-  <h3>Dashboard</h3>
-    <p>Have a look at our <a href="/task">responsibilities</a>.</p>
-</main>
+{{ define "screen" }}
+    <main>
+        <h3>{{cfg.Title}}</h3>
+        <p>Have a look at our <a href="/task">responsibilities</a>.</p>
+    </main>
 {{ end}}
