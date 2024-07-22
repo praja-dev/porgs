@@ -17,6 +17,7 @@
 
 # Root level package
 !/*.go
+!/*.sql
 
 # Main package generating the porgs command line program
 /cmd/*.go
@@ -27,5 +28,6 @@
 
 # Plugin packages
 !/*/*.go
+!/*/*.sql
 !/*/assets/*
 !/*/views/*.go.*
