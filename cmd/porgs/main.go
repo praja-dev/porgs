@@ -4,7 +4,6 @@ import (
 	"context"
 	"embed"
 	"errors"
-	"github.com/eatonphil/gosqlite"
 	"github.com/praja-dev/porgs"
 	"github.com/praja-dev/porgs/task"
 	"log/slog"
@@ -15,15 +14,19 @@ import (
 	"strconv"
 	"sync"
 	"time"
+	"zombiezen.com/go/sqlite/sqlitex"
 )
 
 //go:embed assets/*
 //go:embed layouts/*.go.html
 //go:embed views/*.go.html
+//go:embed schema.sql
+//go:embed seed.sql
 var embeddedFS embed.FS
 
 func main() {
 	porgs.BootConfig = getBootConfig()
+	porgs.DbConnPool = getDbConnPool()
 	porgs.SiteConfig = getSiteConfig()
 	porgs.Plugins = getPlugins()
 	porgs.Layout = getLayoutTemplate()
@@ -52,11 +55,26 @@ func getBootConfig() porgs.AppBootConfig {
 		dsn = "porgs.db"
 	}
 
+	slog.Info("config: boot config", "host", host, "port", port, "dsn", dsn)
+
 	return porgs.AppBootConfig{
 		Host: host,
 		Port: port,
 		DSN:  dsn,
 	}
+}
+
+func getDbConnPool() *sqlitex.Pool {
+	cpl, err := sqlitex.NewPool(porgs.BootConfig.DSN, sqlitex.PoolOptions{
+		PoolSize: -1,
+	})
+	if err != nil {
+		slog.Error("db: conn pool", "err", err)
+		os.Exit(1)
+	}
+	slog.Info("db: conn pool ready")
+
+	return cpl
 }
 
 func getSiteConfig() porgs.AppSiteConfig {
@@ -78,42 +96,45 @@ func getPlugins() map[string]porgs.Plugin {
 
 func initDB() {
 	slog.Info("db: initializing")
-	conn, err := gosqlite.Open(porgs.BootConfig.DSN)
+	conn, err := porgs.DbConnPool.Take(context.Background())
 	if err != nil {
-		slog.Error("db: open", "err", err)
+		slog.Error("init-db: take conn", "err", err)
 		os.Exit(1)
 	}
-	defer func() { _ = conn.Close() }()
-	conn.BusyTimeout(3 * time.Second)
-	slog.Info("db: connected", "dsn", porgs.BootConfig.DSN)
+	defer porgs.DbConnPool.Put(conn)
 
-	// # Check if user table exists
+	// # Check if user table exists - a negative implies this is a fresh database
 	qryUserTbl := "SELECT name FROM sqlite_master WHERE type='table' AND name='user';"
-	stmt, err := conn.Prepare(qryUserTbl)
+	stmt, _, err := conn.PrepareTransient(qryUserTbl)
 	if err != nil {
-		slog.Error("db statement: prepare", "err", err)
+		slog.Error("init-db: is fresh: prepare", "err", err)
 		os.Exit(1)
 	}
-	defer func() { _ = stmt.Close() }()
+	defer func() { _ = stmt.Finalize() }()
 	hasRow, err := stmt.Step()
 	if err != nil {
-		slog.Error("db statement: step", "err", err)
+		slog.Error("init-db: is fresh: step", "err", err)
 		os.Exit(1)
 	}
 	if hasRow {
-		slog.Info("db: ready")
+		slog.Info("init-db: is fresh: no")
 		return
 	}
+	slog.Info("init-db: is fresh: yes")
 
-	// # Create user table
-	slog.Info("db: preparing for first use")
-	qryCreateUserTbl := "CREATE TABLE user (id INTEGER PRIMARY KEY, name TEXT);"
-	err = conn.Exec(qryCreateUserTbl)
+	// # Run schema.sql and seed.sql scripts
+	err = sqlitex.ExecuteScriptFS(conn, embeddedFS, "schema.sql", &sqlitex.ExecOptions{})
 	if err != nil {
-		slog.Error("db: create user table", "err", err)
+		slog.Error("init-db: schema", "err", err)
 		os.Exit(1)
 	}
-	slog.Info("db: ready")
+	slog.Info("init-db: schema created")
+	err = sqlitex.ExecuteScriptFS(conn, embeddedFS, "seed.sql", &sqlitex.ExecOptions{})
+	if err != nil {
+		slog.Error("init-db: seed", "err", err)
+		os.Exit(1)
+	}
+	slog.Info("init-db: seed ok")
 }
 
 func run(ctx context.Context) {

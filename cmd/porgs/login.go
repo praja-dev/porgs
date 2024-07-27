@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/subtle"
 	"encoding/base64"
-	"github.com/eatonphil/gosqlite"
 	"github.com/praja-dev/porgs"
 	"golang.org/x/crypto/argon2"
 	"log/slog"
@@ -45,21 +44,24 @@ func handleLoginPost() http.Handler {
 		pwd := r.PostFormValue("password")
 
 		// # Find the user record with this username
-		conn, err := gosqlite.Open(porgs.BootConfig.DSN)
+		conn, err := porgs.DbConnPool.Take(r.Context())
 		if err != nil {
-			slog.Error("login: db open", "err", err)
+			slog.Error("login: take conn", "err", err)
 			porgs.ShowDefaultErrorPage(w)
 			return
 		}
-		defer func() { _ = conn.Close() }()
-		conn.BusyTimeout(3 * time.Second)
-		stSelect, err := conn.Prepare("SELECT password, salt FROM user WHERE username = ?", usr)
+		defer porgs.DbConnPool.Put(conn)
+
+		stSelect, err := conn.Prepare("SELECT password, salt FROM user WHERE username = ?")
 		if err != nil {
 			slog.Error("login: select stmt prepare", "err", err)
 			porgs.ShowDefaultErrorPage(w)
 			return
 		}
-		defer func() { _ = stSelect.Close() }()
+		defer func() { _ = stSelect.Reset(); _ = stSelect.ClearBindings() }()
+
+		stSelect.BindText(1, usr)
+
 		hasRow, err := stSelect.Step()
 		if err != nil {
 			slog.Error("login: select stmt step", "err", err)
@@ -76,14 +78,8 @@ func handleLoginPost() http.Handler {
 		}
 
 		// # Check if the password matches
-		var password string
-		var salt string
-		err = stSelect.Scan(&password, &salt)
-		if err != nil {
-			slog.Error("login: select stmt scan", "err", err)
-			porgs.ShowDefaultErrorPage(w)
-			return
-		}
+		password := stSelect.GetText("password")
+		salt := stSelect.GetText("salt")
 		match, err := pwdMatch(pwd, password, salt)
 		if err != nil {
 			slog.Error("login: pwd match", "err", err)
@@ -115,8 +111,14 @@ func handleLoginPost() http.Handler {
 			porgs.ShowDefaultErrorPage(w)
 			return
 		}
-		defer func() { _ = stInsert.Close() }()
-		err = stInsert.Exec(token, now, now, usr)
+		defer func() { _ = stInsert.Reset(); _ = stInsert.ClearBindings() }()
+
+		stInsert.BindText(1, token)
+		stInsert.BindInt64(2, now)
+		stInsert.BindInt64(3, now)
+		stInsert.BindText(4, usr)
+
+		_, err = stInsert.Step()
 		if err != nil {
 			slog.Error("login: insert stmt exec", "err", err)
 			porgs.ShowDefaultErrorPage(w)

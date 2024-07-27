@@ -3,10 +3,14 @@ package porgs
 import (
 	"html/template"
 	"net/http"
+	"zombiezen.com/go/sqlite/sqlitex"
 )
 
 // BootConfig holds configuration needed for the system to boot up.
 var BootConfig AppBootConfig
+
+// DbConnPool is a pool of SQLite database connections.
+var DbConnPool *sqlitex.Pool
 
 // SiteConfig holds the website configuration.
 var SiteConfig AppSiteConfig

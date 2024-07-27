@@ -1,23 +1,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/eatonphil/gosqlite"
 	"github.com/praja-dev/porgs"
 )
 
 func findUserBySessionToken(token string) (porgs.User, error) {
-	// Create db connection
-	conn, err := gosqlite.Open(porgs.BootConfig.DSN)
+	conn, err := porgs.DbConnPool.Take(context.Background())
 	if err != nil {
 		return porgs.User{}, err
 	}
-	defer func() { _ = conn.Close() }()
-	stmt, err := conn.Prepare("SELECT username FROM session where id=?", token)
+	defer porgs.DbConnPool.Put(conn)
+
+	stmt, err := conn.Prepare("SELECT username FROM session where id=?")
 	if err != nil {
 		return porgs.User{}, err
 	}
-	defer func() { _ = stmt.Close() }()
+	defer func() { _ = stmt.ClearBindings(); _ = stmt.Reset() }()
+
+	stmt.BindText(1, token)
 	hasRow, err := stmt.Step()
 	if err != nil {
 		return porgs.User{}, err
@@ -25,11 +27,7 @@ func findUserBySessionToken(token string) (porgs.User, error) {
 	if !hasRow {
 		return porgs.User{}, fmt.Errorf("invalid session token")
 	}
-	var username string
-	err = stmt.Scan(&username)
-	if err != nil {
-		return porgs.User{}, err
-	}
+	username := stmt.GetText("username")
 
 	return porgs.User{
 		Name: username,
