@@ -25,6 +25,7 @@
 !/cmd/porgs/assets/*
 !/cmd/porgs/views/*.go.html
 !/cmd/porgs/layouts/*.go.html
+!/cmd/porgs/*.sql
 
 # Plugin packages
 !/*/*.go
