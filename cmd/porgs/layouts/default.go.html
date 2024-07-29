@@ -16,9 +16,10 @@
         <div></div>
         <div>
             {{- if ne .User.Name "anon"}}
-            <a href="/logout">Logout {{ .User.Name }}</a>
+            <a href="/home">{{ .User.Name }}</a>&nbsp;⋄
+            <a href="/logout">logout</a>
             {{- else if ne .Name "main-login" }}
-            <a href="/login">Login</a>
+            <a href="/login">login</a>
             {{- end }}
         </div>
     </nav>

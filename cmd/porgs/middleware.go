@@ -11,7 +11,7 @@ import (
 // If no session cookie is present, a user with name "anon" is set in the context.
 func idUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id, err := r.Cookie("session")
+		id, err := r.Cookie(porgs.SessionCookieName)
 		if err != nil {
 			ctx := context.WithValue(r.Context(), "user", porgs.User{Name: porgs.AnonUser})
 			h.ServeHTTP(w, r.WithContext(ctx))

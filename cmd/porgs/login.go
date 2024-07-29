@@ -127,7 +127,7 @@ func handleLoginPost() http.Handler {
 
 		// # Set the session token in an HttpOnly cookie
 		cookie := http.Cookie{
-			Name:     "session",
+			Name:     porgs.SessionCookieName,
 			Path:     "/",
 			Value:    token,
 			MaxAge:   int(24 * time.Hour),
@@ -161,18 +161,43 @@ func pwdMatch(plainPwd string, pwdField string, saltField string) (bool, error) 
 
 func handleLogout() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// # Extract user from request context
+		user := r.Context().Value("user").(porgs.User)
 
-		// # Delete this user session from db
+		// # Delete all user sessions for this user,
+		// # so she will be logged out from all devices.
+		conn, err := porgs.DbConnPool.Take(r.Context())
+		if err != nil {
+			slog.Error("logout: take conn", "err", err)
+			porgs.ShowDefaultErrorPage(w, r)
+			return
+		}
+		defer porgs.DbConnPool.Put(conn)
+		stmt, err := conn.Prepare("DELETE FROM session WHERE username = ?")
+		if err != nil {
+			slog.Error("logout: delete stmt prepare", "err", err)
+			porgs.ShowDefaultErrorPage(w, r)
+			return
+		}
+		defer func() { _ = stmt.Reset(); _ = stmt.ClearBindings() }()
+		stmt.BindText(1, user.Name)
+		_, err = stmt.Step()
+		if err != nil {
+			slog.Error("logout: delete stmt exec", "err", err)
+			porgs.ShowDefaultErrorPage(w, r)
+			return
+		}
 
 		// # Delete cookie
+		cookie := http.Cookie{
+			Name:     porgs.SessionCookieName,
+			Path:     "/",
+			Value:    "",
+			MaxAge:   -1,
+			HttpOnly: true,
+		}
+		http.SetCookie(w, &cookie)
 
-		// # Redirect to login page
-
-		porgs.ShowErrorPage(w, r, porgs.ErrorPage{
-			Title:   "Not implemented",
-			Msg:     "This feature is under development.",
-			BackURL: "/",
-		})
+		// # Redirect to root page
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 }

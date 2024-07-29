@@ -28,3 +28,4 @@ var Templates map[string]*template.Template
 var Handler *http.ServeMux
 
 const AnonUser = "anon"
+const SessionCookieName = "session"
