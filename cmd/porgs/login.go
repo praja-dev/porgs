@@ -28,7 +28,7 @@ const MsgInvalidCredentials = "Invalid username or password"
 
 func handleLoginGet() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		porgs.RenderView(w, porgs.View{Name: "main-login", Title: "Login | PORGS", Data: vmLogin{}})
+		porgs.RenderView(w, r, porgs.View{Name: "main-login", Title: "Login | PORGS", Data: vmLogin{}})
 	})
 }
 
@@ -37,7 +37,7 @@ func handleLoginPost() http.Handler {
 		// # Extract username and password from the form
 		if err := r.ParseForm(); err != nil {
 			slog.Error("login: form", "err", err)
-			porgs.ShowDefaultErrorPage(w)
+			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
 		usr := r.PostFormValue("username")
@@ -47,7 +47,7 @@ func handleLoginPost() http.Handler {
 		conn, err := porgs.DbConnPool.Take(r.Context())
 		if err != nil {
 			slog.Error("login: take conn", "err", err)
-			porgs.ShowDefaultErrorPage(w)
+			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
 		defer porgs.DbConnPool.Put(conn)
@@ -55,7 +55,7 @@ func handleLoginPost() http.Handler {
 		stSelect, err := conn.Prepare("SELECT password, salt FROM user WHERE username = ?")
 		if err != nil {
 			slog.Error("login: select stmt prepare", "err", err)
-			porgs.ShowDefaultErrorPage(w)
+			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
 		defer func() { _ = stSelect.Reset(); _ = stSelect.ClearBindings() }()
@@ -65,12 +65,12 @@ func handleLoginPost() http.Handler {
 		hasRow, err := stSelect.Step()
 		if err != nil {
 			slog.Error("login: select stmt step", "err", err)
-			porgs.ShowDefaultErrorPage(w)
+			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
 		if !hasRow {
 			slog.Info("login: user not found", "usr", usr)
-			porgs.RenderView(w, porgs.View{Name: "main-login", Title: "Login | PORGS", Data: vmLogin{
+			porgs.RenderView(w, r, porgs.View{Name: "main-login", Title: "Login | PORGS", Data: vmLogin{
 				Usr: usr,
 				Msg: MsgInvalidCredentials,
 			}})
@@ -83,12 +83,12 @@ func handleLoginPost() http.Handler {
 		match, err := pwdMatch(pwd, password, salt)
 		if err != nil {
 			slog.Error("login: pwd match", "err", err)
-			porgs.ShowDefaultErrorPage(w)
+			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
 		if !match {
 			slog.Info("login: incorrect pwd", "usr", usr)
-			porgs.RenderView(w, porgs.View{Name: "main-login", Title: "Login | PORGS", Data: vmLogin{
+			porgs.RenderView(w, r, porgs.View{Name: "main-login", Title: "Login | PORGS", Data: vmLogin{
 				Usr: usr,
 				Msg: MsgInvalidCredentials,
 			}})
@@ -99,7 +99,7 @@ func handleLoginPost() http.Handler {
 		token, err := porgs.RandomBase64String(16)
 		if err != nil {
 			slog.Error("login: generate token", "err", err)
-			porgs.ShowDefaultErrorPage(w)
+			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
 
@@ -108,7 +108,7 @@ func handleLoginPost() http.Handler {
 		stInsert, err := conn.Prepare("INSERT INTO session (id, created, updated, username) VALUES (?, ?, ?, ?)")
 		if err != nil {
 			slog.Error("login: insert stmt prepare", "err", err)
-			porgs.ShowDefaultErrorPage(w)
+			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
 		defer func() { _ = stInsert.Reset(); _ = stInsert.ClearBindings() }()
@@ -121,13 +121,13 @@ func handleLoginPost() http.Handler {
 		_, err = stInsert.Step()
 		if err != nil {
 			slog.Error("login: insert stmt exec", "err", err)
-			porgs.ShowDefaultErrorPage(w)
+			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
 
 		// # Set the session token in an HttpOnly cookie
 		cookie := http.Cookie{
-			Name:     "id",
+			Name:     "session",
 			Path:     "/",
 			Value:    token,
 			MaxAge:   int(24 * time.Hour),
@@ -169,7 +169,7 @@ func handleLogout() http.Handler {
 
 		// # Redirect to login page
 
-		porgs.ShowErrorPage(w, porgs.ErrorPage{
+		porgs.ShowErrorPage(w, r, porgs.ErrorPage{
 			Title:   "Not implemented",
 			Msg:     "This feature is under development.",
 			BackURL: "/",

@@ -7,11 +7,9 @@ import (
 
 func handleHome() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		u := r.Context().Value("user").(porgs.User)
-
-		porgs.RenderView(w, porgs.View{
+		porgs.RenderView(w, r, porgs.View{
 			Name:  "main-home",
 			Title: "Home | " + porgs.SiteConfig.Title,
-			User:  u})
+		})
 	})
 }

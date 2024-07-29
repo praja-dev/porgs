@@ -12,15 +12,15 @@ func getHandlers() *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.Handle("/a/", getAssetHandler())
-	mux.Handle("GET /{$}", handleRoot())
-	mux.Handle("GET /login", handleLoginGet())
-	mux.Handle("POST /login", handleLoginPost())
-	mux.Handle("GET /logout", secure(handleLogout()))
-	mux.Handle("GET /home", secure(handleHome()))
+	mux.Handle("GET /{$}", idUser(handleRoot()))
+	mux.Handle("GET /login", idUser(handleLoginGet()))
+	mux.Handle("POST /login", idUser(handleLoginPost()))
+	mux.Handle("GET /logout", idUser(rejectAnon(handleLogout())))
+	mux.Handle("GET /home", idUser(rejectAnon(handleHome())))
 
 	for name, plugin := range porgs.Plugins {
 		mux.Handle("/a/"+name+"/", getPluginAssetHandler(plugin))
-		mux.Handle("/"+name+"/", secure(http.StripPrefix("/"+name, plugin.GetHandler())))
+		mux.Handle("/"+name+"/", idUser(rejectAnon(http.StripPrefix("/"+name, plugin.GetHandler()))))
 	}
 
 	return mux

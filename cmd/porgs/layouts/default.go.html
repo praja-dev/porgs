@@ -15,9 +15,9 @@
         <div><a href="/">{{ cfg.Title }}</a></div>
         <div></div>
         <div>
-            {{- if .User.Name}}
+            {{- if ne .User.Name "anon"}}
             <a href="/logout">Logout {{ .User.Name }}</a>
-            {{- else }}
+            {{- else if ne .Name "main-login" }}
             <a href="/login">Login</a>
             {{- end }}
         </div>

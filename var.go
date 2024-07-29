@@ -26,3 +26,5 @@ var Templates map[string]*template.Template
 
 // Handler is the main HTTP request handler for the system.
 var Handler *http.ServeMux
+
+const AnonUser = "anon"
