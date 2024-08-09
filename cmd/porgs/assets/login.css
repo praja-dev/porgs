@@ -1,0 +1,6 @@
+main.login.screen {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-block-start: 2rem;
+}

@@ -3,25 +3,24 @@
 {{ end }}
 
 {{ define "screen" }}
-    <main>
-        <h3>Login</h3>
+    <main class="login screen">
         <form action="/login" method="post">
             <fieldset>
-                <legend>Please enter your username and password</legend>
-                <div>
+                <legend>Login</legend>
+                <div class="field">
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username" value="{{.Usr}}" required aria-required="true">
                 </div>
-                <div>
+                <div class="field">
                     <label for="password">Password:</label>
                     <input type="password" id="password" name="password" required aria-required="true">
+                </div>
+                <div>
+                    <button type="submit" class="primary">Login</button>
                 </div>
                 <p>
                     {{.Msg}}
                 </p>
-                <div>
-                    <button type="submit">Login</button>
-                </div>
             </fieldset>
         </form>
     </main>

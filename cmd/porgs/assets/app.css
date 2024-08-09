@@ -25,3 +25,67 @@ header > nav, footer > nav {
     justify-content: space-between;
     padding: 0.5rem;
 }
+
+form {
+    padding: 2em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    max-width: 400px;
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 1em;
+}
+
+legend {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+}
+
+fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: contents;
+}
+
+div.field {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 0.5em;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.75em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+button.primary {
+    padding: 0.75em;
+    border: none;
+    border-radius: 4px;
+    background-color: #007BFF;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+button.primary:hover {
+    background-color: #0056b3;
+}
