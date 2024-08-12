@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS user
     username TEXT PRIMARY KEY,
     password TEXT,                       -- Argon2 hashed
     salt     TEXT,                       -- Salt for hashing algorithm
-    status   INTEGER NOT NULL DEFAULT 0, -- 0: disabled, 1: enabled, 2: locked, 3: archived, 4: deleted
+    status   INTEGER NOT NULL DEFAULT 0, -- 0: inactive, 1: active, 2: paused, 3: stopped, 4: deleted
     email    TEXT                        -- Not unique
 ) WITHOUT ROWID;
 
