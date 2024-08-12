@@ -21,8 +21,7 @@ func idUser(h http.Handler) http.Handler {
 		u, err := findUserBySessionToken(id.Value)
 		if err != nil {
 			slog.Error("idUser: find user", "err", err)
-			porgs.ShowDefaultErrorPage(w, r)
-			return
+			u = porgs.User{Name: porgs.AnonUser}
 		}
 
 		ctx := context.WithValue(r.Context(), "user", u)
@@ -33,7 +32,11 @@ func idUser(h http.Handler) http.Handler {
 // rejectAnon redirects to /login if the current user is anonymous
 func rejectAnon(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		u := r.Context().Value("user").(porgs.User)
+		u, ok := r.Context().Value("user").(porgs.User)
+		if !ok {
+			u = porgs.User{Name: porgs.AnonUser}
+		}
+
 		if u.Name == porgs.AnonUser {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
