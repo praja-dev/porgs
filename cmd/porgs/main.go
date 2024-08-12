@@ -5,6 +5,7 @@ import (
 	"embed"
 	"errors"
 	"github.com/praja-dev/porgs"
+	"github.com/praja-dev/porgs/core"
 	"github.com/praja-dev/porgs/task"
 	"log/slog"
 	"net"
@@ -88,6 +89,9 @@ func getSiteConfig() porgs.AppSiteConfig {
 func getPlugins() map[string]porgs.Plugin {
 	plugins := make(map[string]porgs.Plugin)
 
+	corePlugin := &core.Plugin{}
+	plugins[corePlugin.GetName()] = corePlugin
+
 	taskPlugin := &task.Plugin{}
 	plugins[taskPlugin.GetName()] = taskPlugin
 
@@ -122,19 +126,37 @@ func initDB() {
 	}
 	slog.Info("init-db: is fresh: yes")
 
-	// # Run schema.sql and seed.sql scripts
+	// # Run schema.sql and seed.sql scripts in main
 	err = sqlitex.ExecuteScriptFS(conn, embeddedFS, "schema.sql", &sqlitex.ExecOptions{})
 	if err != nil {
 		slog.Error("init-db: schema", "err", err)
 		os.Exit(1)
 	}
-	slog.Info("init-db: schema created")
+	slog.Info("init-db: main schema created")
+
 	err = sqlitex.ExecuteScriptFS(conn, embeddedFS, "seed.sql", &sqlitex.ExecOptions{})
 	if err != nil {
 		slog.Error("init-db: seed", "err", err)
 		os.Exit(1)
 	}
-	slog.Info("init-db: seed ok")
+	slog.Info("init-db: main seed ok")
+
+	// # Run schema.sql and seed.sql scripts in plugins
+	for _, plugin := range porgs.Plugins {
+		err = sqlitex.ExecuteScriptFS(conn, plugin.GetFS(), "schema.sql", &sqlitex.ExecOptions{})
+		if err != nil {
+			slog.Error("init-db: plugin schema", "plugin", plugin.GetName(), "err", err)
+			os.Exit(2)
+		}
+		slog.Info("init-db: plugin schema created", "plugin", plugin.GetName())
+
+		err = sqlitex.ExecuteScriptFS(conn, plugin.GetFS(), "seed.sql", &sqlitex.ExecOptions{})
+		if err != nil {
+			slog.Error("init-db: plugin seed", "plugin", plugin.GetName(), "err", err)
+			os.Exit(2)
+		}
+		slog.Info("init-db: plugin seed ok", "plugin", plugin.GetName())
+	}
 }
 
 func run(ctx context.Context) {

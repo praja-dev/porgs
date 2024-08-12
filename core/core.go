@@ -1,4 +1,4 @@
-package task
+package core
 
 import (
 	"embed"
@@ -7,7 +7,7 @@ import (
 type Plugin struct{}
 
 func (p *Plugin) GetName() string {
-	return "task"
+	return "core"
 }
 
 func (p *Plugin) GetDependencies() []string {
