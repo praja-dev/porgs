@@ -11,6 +11,7 @@ type User struct {
 type Capability struct {
 	Name        string
 	Description string
+	DashUrlPath string
 }
 
 // Role is a set of capabilities.

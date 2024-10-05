@@ -13,6 +13,13 @@
         {{- range $name, $plugin := .Plugins }}
             <div>
                 <h3><a href="/{{$name}}">{{$name}}</a></h3>
+                <ul>
+                {{ range $cap := $plugin.GetCapabilities }}
+                    {{ if $cap.DashUrlPath }}
+                    <li><a href="/{{$name}}/{{$cap.DashUrlPath}}">{{$cap.Description}}</a></li>
+                    {{ end }}
+                {{ end }}
+                </ul>
             </div>
         {{- end }}
         </div>
