@@ -7,8 +7,7 @@
 
 {{ define "screen" }}
     <main>
-        <h3>Core</h3>
-        <p>Enabled PORGS plugins:</p>
+        <h3>Dashboard</h3>
         <ul>{{ range $name, $plugin := .Plugins }}
             <li><a href="/{{$name}}">{{$name}}</a></li>
         {{ end }}</ul>
