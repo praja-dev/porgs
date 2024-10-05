@@ -10,6 +10,7 @@ func (p *Plugin) GetHandler(ctx context.Context) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.Handle("GET /{$}", handleRoot(ctx))
+	mux.Handle("GET /orgs", handleOrgs(ctx))
 
 	return mux
 }
