@@ -1,6 +1,7 @@
 package porgs
 
 import (
+	"context"
 	"embed"
 	"net/http"
 )
@@ -41,5 +42,8 @@ type Plugin interface {
 	GetFS() embed.FS
 
 	// GetHandler returns the plugin's HTTP router.
-	GetHandler() *http.ServeMux
+	GetHandler(ctx context.Context) *http.ServeMux
+
+	// GetInit initializes the plugin.
+	GetInit(ctx context.Context) error
 }

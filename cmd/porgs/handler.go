@@ -20,7 +20,8 @@ func getHandlers() *http.ServeMux {
 
 	for name, plugin := range porgs.Plugins {
 		mux.Handle("/a/"+name+"/", getPluginAssetHandler(plugin))
-		mux.Handle("/"+name+"/", idUser(rejectAnon(http.StripPrefix("/"+name, plugin.GetHandler()))))
+		mux.Handle("/"+name+"/", idUser(rejectAnon(
+			http.StripPrefix("/"+name, plugin.GetHandler(porgs.Context)))))
 	}
 
 	return mux

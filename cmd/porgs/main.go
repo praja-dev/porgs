@@ -26,6 +26,7 @@ import (
 var embeddedFS embed.FS
 
 func main() {
+	porgs.Context = context.Background()
 	porgs.BootConfig = getBootConfig()
 	porgs.DbConnPool = getDbConnPool()
 	porgs.SiteConfig = getSiteConfig()
@@ -35,7 +36,8 @@ func main() {
 	porgs.Handler = getHandlers()
 
 	initDB()
-	run(context.Background())
+	initPlugins()
+	run(porgs.Context)
 }
 
 func getBootConfig() porgs.AppBootConfig {
@@ -156,6 +158,16 @@ func initDB() {
 			os.Exit(2)
 		}
 		slog.Info("init-db: plugin seed ok", "plugin", plugin.GetName())
+	}
+}
+
+func initPlugins() {
+	for _, plugin := range porgs.Plugins {
+		err := plugin.GetInit(porgs.Context)
+		if err != nil {
+			slog.Error("init", "plugin", plugin.GetName(), "err", err)
+			os.Exit(4)
+		}
 	}
 }
 

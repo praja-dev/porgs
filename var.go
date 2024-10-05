@@ -1,10 +1,14 @@
 package porgs
 
 import (
+	"context"
 	"html/template"
 	"net/http"
 	"zombiezen.com/go/sqlite/sqlitex"
 )
+
+// Context is the root context for the system.
+var Context context.Context
 
 // BootConfig holds configuration needed for the system to boot up.
 var BootConfig AppBootConfig
