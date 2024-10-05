@@ -3,15 +3,43 @@ DROP TABLE IF EXISTS person;
 DROP TABLE IF EXISTS external_org;
 DROP TABLE IF EXISTS org;
 
+-- Organization: an organization of people.
 CREATE TABLE IF NOT EXISTS org
 (
     id      INTEGER PRIMARY KEY,
     created INTEGER NOT NULL,
     updated INTEGER NOT NULL,
+
+    -- ## Parent Organization ID
+    -- Root organization has the ID 1
+    -- ID 0 is not used
+    parent  INTEGER,
+
+    -- ## Source of data for this object
+    -- 0: Local (default) - data stored in this PORGS instance
+    -- 1: Peer - data stored in a peer PORGS instance
+    source INTEGER NOT NULL DEFAULT 0,
+
+    -- ## Organization Type
+    -- 1: Organization
+    -- 2: Country, 3: Region, 4: State, 5: Province, 6: County, 7: District, 8: City, 9: Town, 10: Village
+    -- 1000: Sri Lanka, 1001: Sri Lanka Province, 1002: Sri Lanka District
+    -- 1003: Sri Lanka DS Division, 1004: Sri Lanka GN Division, 1005: Sri Lanka Village
+    ---1010: Sri Lanka Electoral District, 1011: Sri Lanka Polling Division, 1012: Sri Lanka Polling District
+    type    INTEGER NOT NULL DEFAULT 1,
+
     name    TEXT    NOT NULL,
-    type    TEXT    NOT NULL DEFAULT 'praja',
-    storage INTEGER NOT NULL DEFAULT 0, -- 0: local, 1: external
-    parent  INTEGER NOT NULL DEFAULT 1, -- The root organization has id 1
+
+    -- ## Translations
+    trlx TEXT,
+
+    -- ## Custom Properties
+    -- Schema for the custom properties is determined by the organization type (type field)
+    cxp TEXT,
+
+    -- ## Translations for Custom Properties
+    cxp_trlx TEXT,
+
     FOREIGN KEY (parent) REFERENCES org (id)
 );
 
