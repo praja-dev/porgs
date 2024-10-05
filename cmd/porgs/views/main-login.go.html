@@ -2,6 +2,11 @@
     {{- template "default-layout" . }}
 {{ end }}
 
+{{ define "styles" }}
+    <link rel="stylesheet" href="/a/login.css">
+{{ end }}
+{{ define "scripts" }}{{ end }}
+
 {{ define "screen" }}
     <main class="login screen">
         <form action="/login" method="post">
