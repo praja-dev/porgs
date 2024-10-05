@@ -14,7 +14,7 @@ func handleHome() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		porgs.RenderView(w, r, porgs.View{
 			Name:  "main-home",
-			Title: "Home | " + porgs.SiteConfig.Title,
+			Title: "Dashboard | " + porgs.SiteConfig.Title,
 			Data: vmHome{
 				Plugins: porgs.Plugins,
 			},

@@ -2,14 +2,19 @@
     {{- template "default-layout" . }}
 {{ end }}
 
-{{ define "styles" }}{{ end }}
+{{ define "styles" }}
+    <link rel="stylesheet" href="/a/home.css">
+{{ end }}
 {{ define "scripts" }}{{ end }}
 
 {{ define "screen" }}
     <main>
-        <h3>Dashboard</h3>
-        <ul>{{ range $name, $plugin := .Plugins }}
-            <li><a href="/{{$name}}">{{$name}}</a></li>
-        {{ end }}</ul>
+        <div class="dashboard">
+        {{- range $name, $plugin := .Plugins }}
+            <div>
+                <h3><a href="/{{$name}}">{{$name}}</a></h3>
+            </div>
+        {{- end }}
+        </div>
     </main>
 {{ end}}
