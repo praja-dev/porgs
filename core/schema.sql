@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS org
     -- ID 0 is not used
     parent  INTEGER,
 
+    -- ## Sequence ID to order the organization within the parent
+    sid  INTEGER,
+
     -- ## Source of data for this object
     -- 0: Local (default) - data stored in this PORGS instance
     -- 1: Peer - data stored in a peer PORGS instance
@@ -27,6 +30,9 @@ CREATE TABLE IF NOT EXISTS org
     -- 1003: Sri Lanka DS Division, 1004: Sri Lanka GN Division, 1005: Sri Lanka Village
     ---1010: Sri Lanka Electoral District, 1011: Sri Lanka Polling Division, 1012: Sri Lanka Polling District
     type    INTEGER NOT NULL DEFAULT 1,
+
+    external_id TEXT,
+    external_sid TEXT,
 
     name    TEXT    NOT NULL,
 

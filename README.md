@@ -1,11 +1,11 @@
 # Praja Organizations
 
-Praja Organizations (PORGS) is a software product for managing people, work,
-and discussions within government, non-government, and community organizations.
+PORGS—Praja Organizations is a web application for managing people, work, and discussions
+within community and government organizations.
 
 ## Use
 
-> ⚠ PORGS is currently not ready for use as it is in early stage active development.
+> 🚧🚧🚧 Under construction. Not ready for use. 🚧🚧🚧
 
 ## Contribute
 
@@ -15,12 +15,27 @@ and discussions within government, non-government, and community organizations.
 
 [Setup](https://go.dev/doc/install) a Go development environment.
 
-Run the program
+Clone the source code repository:
 ```shell
+git clone https://github.com/praja-dev/porgs.git
+```
+
+Run the web app:
+```shell
+cd porgs
 go run ./cmd/porgs
 ```
 
-## Deploy
+Open http://localhost:8642 on a web browser.
+
+Use username `admin` and password `123` to sign-in. 
+
+Enter `Ctrl+C` to stop the porgs web app.
+
+Run the web app again—this time loading example data from `./examples/lk/data` directory.
+```shell
+PORGS_LOAD_DIR=./examples/lk/data go run ./cmd/porgs
+```
 
 ## Design
 

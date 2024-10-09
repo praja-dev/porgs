@@ -6,6 +6,7 @@ import (
 )
 
 func (p *Plugin) GetInit(_ context.Context) error {
-	slog.Info("core: loaded")
+	loadData()
+	slog.Info("core: ready")
 	return nil
 }

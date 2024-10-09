@@ -32,3 +32,6 @@
 !/*/*.sql
 !/*/assets/*
 !/*/views/*.go.*
+
+# Example data
+!/examples/lk/data/*.csv
