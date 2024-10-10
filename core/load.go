@@ -2,7 +2,6 @@ package core
 
 import (
 	"encoding/csv"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
@@ -60,7 +59,7 @@ func loadOrgs(directory string) {
 		os.Exit(3)
 	}
 
-	err = saveOrgToDB(orgs[0])
+	err = SaveOrg(orgs[0])
 	if err != nil {
 		slog.Error("core: load orgs", "err", err)
 		os.Exit(3)
@@ -181,22 +180,15 @@ func readOrgCSV(filePath string) ([]Org, error) {
 			return nil, fmt.Errorf("line %d: Name is required", line)
 		}
 
-		orgPropsTranslations := make(map[string]OrgProps)
+		trlx := make(map[string]OrgProps)
 		for k, v := range indexOfNameByLang {
-			orgPropsTranslations[k] = OrgProps{Name: rec[v]}
+			trlx[k] = OrgProps{Name: rec[v]}
 		}
-
-		trlxBytes, err := json.Marshal(orgPropsTranslations)
-		org.Trlx = string(trlxBytes)
+		org.Trlx = trlx
 
 		orgs = append(orgs, org)
 		line++
 	}
 
 	return orgs, nil
-}
-
-func saveOrgToDB(org Org) error {
-	slog.Info("saveOrgToDB", "org", org)
-	return nil
 }

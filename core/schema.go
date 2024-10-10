@@ -24,8 +24,8 @@ type Org struct {
 	ExternalID  string
 	ExternalSID string
 	Name        string
-	// Trlx holds translations of field values
-	Trlx string
+	// Trlx holds translations of standard properties for the organization
+	Trlx map[string]OrgProps
 	// XProps hold custom properties for the organization
 	XProps string
 	// XPropsTrlx holds translations of custom properties

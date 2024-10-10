@@ -2,6 +2,7 @@ package porgs
 
 import (
 	"context"
+	"errors"
 	"html/template"
 	"net/http"
 	"zombiezen.com/go/sqlite/sqlitex"
@@ -30,6 +31,8 @@ var Templates map[string]*template.Template
 
 // Handler is the main HTTP request handler for the system.
 var Handler *http.ServeMux
+
+var ErrNotImplemented = errors.New("not implemented")
 
 const AnonUser = "anon"
 const SessionCookieName = "session"
