@@ -26,8 +26,60 @@ func handleOrgs(ctx context.Context) http.Handler {
 	})
 }
 
-func GetOrgs(_ context.Context) ([]Org, error) {
+func GetOrgs(ctx context.Context) ([]Org, error) {
+	conn, err := porgs.DbConnPool.Take(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer porgs.DbConnPool.Put(conn)
+
+	stmt, err := conn.Prepare(`SELECT id, created, updated,
+       parent, sid, source, type, external_id, external_sid,
+       name, trlx
+		FROM org ORDER BY id`)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		err = stmt.Reset()
+		if err != nil {
+			slog.Error("GetOrgs: stmt reset", "err", err)
+		}
+	}()
+
 	var orgs []Org
+	for {
+		hasRow, err := stmt.Step()
+		if err != nil {
+			return nil, err
+		}
+		if !hasRow {
+			break
+		}
+
+		org := Org{
+			ID:          stmt.GetInt64("id"),
+			Created:     stmt.GetInt64("created"),
+			Updated:     stmt.GetInt64("updated"),
+			ParentID:    stmt.GetInt64("parent"),
+			SequenceID:  stmt.GetInt64("sid"),
+			Source:      stmt.GetInt64("source"),
+			Type:        stmt.GetInt64("type"),
+			ExternalID:  stmt.GetText("external_id"),
+			ExternalSID: stmt.GetText("external_sid"),
+			Name:        stmt.GetText("name"),
+		}
+
+		trlxJSON := stmt.GetText("trlx")
+		err = json.Unmarshal([]byte(trlxJSON), &org.Trlx)
+		if err != nil {
+			slog.Error("GetOrgs: unmarshal Trlx", "err", err, "trlx", trlxJSON)
+			return nil, err
+		}
+
+		orgs = append(orgs, org)
+	}
+
 	return orgs, nil
 }
 
