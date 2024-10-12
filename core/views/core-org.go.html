@@ -1,0 +1,21 @@
+{{ block "core-org" . }}
+    {{- template "default-layout" . }}
+{{ end }}
+
+{{ define "styles" }}
+    <link rel="stylesheet" href="/a/core/orgs.css">
+{{ end }}
+
+{{ define "scripts" }}{{ end }}
+
+{{ define "screen" }}
+<main>
+    <div>
+        <h3>{{ .Name }}</h3>
+    </div>
+    <hr />
+    <p>
+        <a href="/core/orgs">Back</a>
+    </p>
+</main>
+{{ end }}

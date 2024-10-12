@@ -33,6 +33,7 @@ var Templates map[string]*template.Template
 var Handler *http.ServeMux
 
 var ErrNotImplemented = errors.New("not implemented")
+var ErrNotFound = errors.New("not found")
 
 const AnonUser = "anon"
 const SessionCookieName = "session"

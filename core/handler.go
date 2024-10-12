@@ -11,6 +11,7 @@ func (p *Plugin) GetHandler(ctx context.Context) *http.ServeMux {
 
 	mux.Handle("GET /{$}", handleRoot(ctx))
 	mux.Handle("GET /orgs", handleOrgs(ctx))
+	mux.Handle("GET /org/{id}", handleOrg(ctx))
 
 	return mux
 }
