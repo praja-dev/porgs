@@ -25,7 +25,11 @@
     </div>
     <hr />
     <p>
-        <a href="/core/orgs">Back</a>
+        {{ if gt .ParentID 0 }}
+            <a href="/core/org/{{ .ParentID }}">Back</a>
+        {{ else }}
+            <a href="/home">Back</a>
+        {{ end }}
     </p>
 </main>
 {{ end }}

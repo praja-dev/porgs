@@ -35,61 +35,54 @@ func loadData() {
 }
 
 func loadOrgs(directory string) {
-	// # Check if there is exactly one CSV file for level 0 organization
-	matches, err := filepath.Glob(filepath.Join(directory, "L0-*.csv"))
-	if err != nil {
-		slog.Error("core: load orgs", "err", err)
-		os.Exit(3)
-	}
-	if len(matches) != 1 {
-		slog.Error("core: load orgs", "err",
-			"exactly one csv file for the level 0 organization named L0-*.csv is required")
-		os.Exit(3)
-	}
-	slog.Info("core: load orgs: csv file with level 0 organization found", "file", matches[0])
-
-	// # Read the "one and only one" Level 0 organization from the L0 CSV file and save in database
-	orgs, err := readOrgCSV(matches[0])
-	if err != nil {
-		slog.Error("core: load orgs", "file", matches[0], "err", err)
-		os.Exit(3)
-	}
-	if len(orgs) != 1 {
-		slog.Error("core: load orgs", "file", matches[0], "err", "exactly one level 0 organization is required")
-		os.Exit(3)
-	}
-	err = SaveOrg(orgs[0])
-	if err != nil {
-		slog.Error("core: load orgs", "err", err)
-		os.Exit(3)
-	}
-	slog.Info("core: load orgs: level 0 organization saved")
-
-	// # Read CSV files for level 1 organizations
-	l2matches, err := filepath.Glob(filepath.Join(directory, "L1-*.csv"))
-	if err != nil {
-		slog.Error("core: load orgs", "err", err)
-		os.Exit(3)
-	}
-	if len(l2matches) == 0 {
-		slog.Warn("core: load orgs: no level 1 csv files found")
-		return
-	}
-	slog.Info("core: load orgs: level 1 csv files found", "files", matches)
-	for _, file := range l2matches {
-		orgs, err := readOrgCSV(file)
+	level := 0
+	for {
+		orgs, err := readOrgCSVsForLevel(directory, level)
 		if err != nil {
-			slog.Error("core: load orgs", "file", file, "err", err)
+			slog.Error("loadOrgs", "err", err)
 			os.Exit(3)
 		}
+
+		if len(orgs) == 0 {
+			return
+		}
+
+		if level == 0 && len(orgs) != 1 {
+			slog.Error("loadOrgs", "err", "there can only be one level 0 (root) organization")
+			os.Exit(3)
+		}
+
 		for _, org := range orgs {
 			err = SaveOrg(org)
 			if err != nil {
-				slog.Error("core: load orgs", "err", err)
+				slog.Error("loadOrgs", "err", err)
 				os.Exit(3)
 			}
 		}
+
+		level++
 	}
+}
+
+func readOrgCSVsForLevel(directory string, level int) ([]Org, error) {
+	matches, err := filepath.Glob(filepath.Join(directory, fmt.Sprintf("L%d-*.csv", level)))
+	if err != nil {
+		return nil, err
+	}
+	if len(matches) == 0 {
+		return nil, nil
+	}
+
+	var orgs []Org
+	for _, file := range matches {
+		orgsInFile, err := readOrgCSV(file)
+		if err != nil {
+			return nil, err
+		}
+		orgs = append(orgs, orgsInFile...)
+	}
+
+	return orgs, nil
 }
 
 func readOrgCSV(filePath string) ([]Org, error) {
@@ -112,6 +105,7 @@ func readOrgCSV(filePath string) ([]Org, error) {
 	}
 
 	// # Validate header has the required 6 fields
+	header[0] = strings.Trim(header[0], "\uFEFF") // Remove BOM
 	if header[0] != "PID" {
 		return nil, fmt.Errorf("PID column expected as field #1, got: %s", header[0])
 	}
@@ -143,7 +137,8 @@ func readOrgCSV(filePath string) ([]Org, error) {
 
 		// TODO: Handle fields beyond NAME
 		if !strings.HasPrefix(fld, "NAME_") {
-			return nil, fmt.Errorf("header: invalid field Name at column %d: %s", i+1, fld)
+			slog.Warn("readOrgCSV: invalid field name", "col", i+1, "field", fld)
+			continue
 		}
 
 		matches := rxName.FindStringSubmatch(fld)
@@ -200,7 +195,7 @@ func readOrgCSV(filePath string) ([]Org, error) {
 
 		org.Name = rec[5]
 		if rec[5] == "" {
-			return nil, fmt.Errorf("line %d: Name is required", line)
+			return nil, fmt.Errorf("name is required. line: %d, file: %s", line, filePath)
 		}
 
 		trlx := make(map[string]OrgProps)
