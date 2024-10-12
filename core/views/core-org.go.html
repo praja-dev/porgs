@@ -10,8 +10,18 @@
 
 {{ define "screen" }}
 <main>
+    <h3>{{ .Name }}</h3>
+    {{ if not .SubOrgs }}
+        <div>
+            <p>No sub-organizations.</p>
+        </div>
+    {{ end }}
     <div>
-        <h3>{{ .Name }}</h3>
+        {{ range .SubOrgs }}
+            <p>
+                <a href="/core/org/{{ .ID }}">{{ .Name }}</a>
+            </p>
+        {{ end }}
     </div>
     <hr />
     <p>

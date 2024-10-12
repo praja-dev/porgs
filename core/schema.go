@@ -30,6 +30,7 @@ type Org struct {
 	XProps string
 	// XPropsTrlx holds translations of custom properties
 	XPropsTrlx string
+	SubOrgs    []Org
 }
 
 // OrgProps contains properties common to all organization types

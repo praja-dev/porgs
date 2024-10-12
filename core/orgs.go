@@ -14,18 +14,17 @@ import (
 
 func handleOrgs(ctx context.Context) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		orgs, err := GetOrgs(ctx)
+		org, err := GetOrg(ctx, 1)
 		if err != nil {
-			porgs.ShowDefaultErrorPage(w, r)
+			porgs.ShowErrorPage(w, r, porgs.ErrorPage{
+				Msg:     "There are no defined organizations. Please add one.",
+				BackURL: "/home",
+				Title:   "No Orgs",
+			})
 			return
 		}
 
-		if len(orgs) == 0 {
-			porgs.RenderView(w, r, porgs.View{Name: "core-orgs", Title: "Orgs", Data: nil})
-			return
-		}
-
-		porgs.RenderView(w, r, porgs.View{Name: "core-orgs", Title: "Orgs", Data: orgs})
+		porgs.RenderView(w, r, porgs.View{Name: "core-org", Title: "Orgs", Data: org})
 	})
 }
 
@@ -57,7 +56,7 @@ func handleOrg(ctx context.Context) http.Handler {
 	})
 }
 
-func GetOrgs(ctx context.Context) ([]Org, error) {
+func GetSubOrgs(ctx context.Context, id int64) ([]Org, error) {
 	conn, err := porgs.DbConnPool.Take(ctx)
 	if err != nil {
 		return nil, err
@@ -67,16 +66,22 @@ func GetOrgs(ctx context.Context) ([]Org, error) {
 	stmt, err := conn.Prepare(`SELECT id, created, updated,
        parent, sid, source, type, external_id, external_sid,
        name, trlx
-		FROM org ORDER BY id`)
+		FROM org WHERE parent = ? ORDER BY sid`)
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
 		err = stmt.Reset()
 		if err != nil {
-			slog.Error("GetOrgs: stmt reset", "err", err)
+			slog.Error("GetSubOrgs: stmt reset", "err", err)
+		}
+		err = stmt.ClearBindings()
+		if err != nil {
+			slog.Error("GetSubOrgs: stmt clear bindings", "err", err)
 		}
 	}()
+
+	stmt.BindInt64(1, id)
 
 	var orgs []Org
 	for {
@@ -104,7 +109,7 @@ func GetOrgs(ctx context.Context) ([]Org, error) {
 		trlxJSON := stmt.GetText("trlx")
 		err = json.Unmarshal([]byte(trlxJSON), &org.Trlx)
 		if err != nil {
-			slog.Error("GetOrgs: unmarshal Trlx", "err", err, "trlx", trlxJSON)
+			slog.Error("GetSubOrgs: unmarshal Trlx", "err", err, "trlx", trlxJSON)
 			return nil, err
 		}
 
@@ -132,6 +137,10 @@ func GetOrg(ctx context.Context, id int64) (Org, error) {
 		err = stmt.Reset()
 		if err != nil {
 			slog.Error("GetOrg: stmt reset", "err", err)
+		}
+		err = stmt.ClearBindings()
+		if err != nil {
+			slog.Error("GetOrg: stmt clear bindings", "err", err)
 		}
 	}()
 
@@ -164,6 +173,12 @@ func GetOrg(ctx context.Context, id int64) (Org, error) {
 		slog.Error("GetOrg: unmarshal Trlx", "err", err, "trlx", trlxJSON)
 		return Org{}, err
 	}
+
+	subOrgs, err := GetSubOrgs(ctx, id)
+	if err != nil {
+		return Org{}, err
+	}
+	org.SubOrgs = subOrgs
 
 	return org, nil
 }
