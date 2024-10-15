@@ -20,7 +20,7 @@ func idUser(h http.Handler) http.Handler {
 
 		u, err := findUserBySessionToken(id.Value)
 		if err != nil {
-			slog.Error("idUser: find user", "err", err)
+			slog.Error("main.idUser: find user", "err", err)
 			u = porgs.User{Name: porgs.AnonUser}
 		}
 

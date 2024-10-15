@@ -30,7 +30,7 @@ func getHandlers() *http.ServeMux {
 func getAssetHandler() http.Handler {
 	assetsDir, err := fs.Sub(embeddedFS, "assets")
 	if err != nil {
-		slog.Error("handlers: assets", "err", err)
+		slog.Error("getAssetHandler", "err", err)
 		os.Exit(1)
 	}
 	return http.StripPrefix("/a", http.FileServer(http.FS(assetsDir)))
@@ -39,7 +39,7 @@ func getAssetHandler() http.Handler {
 func getPluginAssetHandler(plugin porgs.Plugin) http.Handler {
 	assetsDir, err := fs.Sub(plugin.GetFS(), "assets")
 	if err != nil {
-		slog.Error("handlers: plugin assets", "plugin", plugin.GetName(), "err", err)
+		slog.Error("getPluginAssetHandler", "plugin", plugin.GetName(), "err", err)
 		os.Exit(1)
 	}
 	return http.StripPrefix("/a/"+plugin.GetName(), http.FileServer(http.FS(assetsDir)))

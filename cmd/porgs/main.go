@@ -42,23 +42,26 @@ func main() {
 
 func getBootConfig() porgs.AppBootConfig {
 	host := os.Getenv("PORGS_HOST")
+	if host == "" {
+		slog.Info("getBootConfig: host", "msg", "PORGS_HOST not set or is set to \"\"")
+	}
 
 	portStr := os.Getenv("PORGS_PORT")
 	if portStr == "" {
+		slog.Info("getBootConfig: port", "msg", "PORGS_PORT not set, default \"8642\"")
 		portStr = "8642"
 	}
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		slog.Error("config: port", "err", err)
+		slog.Error("getBootConfig: port", "err", err)
 		os.Exit(1)
 	}
 
 	dsn := os.Getenv("PORGS_DSN")
 	if dsn == "" {
+		slog.Info("getBootConfig: dsn", "msg", "PORGS_DSN not set, default \"porgs.db\"")
 		dsn = "porgs.db"
 	}
-
-	slog.Info("config: boot config", "host", host, "port", port, "dsn", dsn)
 
 	return porgs.AppBootConfig{
 		Host: host,
@@ -72,10 +75,10 @@ func getDbConnPool() *sqlitex.Pool {
 		PoolSize: -1,
 	})
 	if err != nil {
-		slog.Error("db: conn pool", "err", err)
+		slog.Error("getDbConnPool", "err", err)
 		os.Exit(1)
 	}
-	slog.Info("db: conn pool ready")
+	slog.Info("getDbConnPool: ok")
 
 	return cpl
 }
@@ -101,63 +104,63 @@ func getPlugins() map[string]porgs.Plugin {
 }
 
 func initDB() {
-	slog.Info("db: initializing")
 	conn, err := porgs.DbConnPool.Take(context.Background())
 	if err != nil {
-		slog.Error("init-db: take conn", "err", err)
+		slog.Error("main.initDB: connect", "err", err)
 		os.Exit(1)
 	}
+	slog.Info("main.initDB: connect: ok")
 	defer porgs.DbConnPool.Put(conn)
 
 	// # Check if user table exists - a negative implies this is a fresh database
 	qryUserTbl := "SELECT name FROM sqlite_master WHERE type='table' AND name='user';"
 	stmt, _, err := conn.PrepareTransient(qryUserTbl)
 	if err != nil {
-		slog.Error("init-db: is fresh: prepare", "err", err)
+		slog.Error("main.initDB: check if db is fresh: stmt prepare", "err", err)
 		os.Exit(1)
 	}
 	defer func() { _ = stmt.Finalize() }()
 	hasRow, err := stmt.Step()
 	if err != nil {
-		slog.Error("init-db: is fresh: step", "err", err)
+		slog.Error("main.initDB: check if db is fresh: stmt step", "err", err)
 		os.Exit(1)
 	}
 	if hasRow {
-		slog.Info("init-db: is fresh: no")
+		slog.Info("main.initDB: check if db is fresh: ok", "msg", "not fresh")
 		return
 	}
-	slog.Info("init-db: is fresh: yes")
+	slog.Info("main.initDB: check if db is fresh: ok", "msg", "fresh")
 
 	// # Run schema.sql and seed.sql scripts in main
 	err = sqlitex.ExecuteScriptFS(conn, embeddedFS, "schema.sql", &sqlitex.ExecOptions{})
 	if err != nil {
-		slog.Error("init-db: schema", "err", err)
+		slog.Error("main.initDB: exec schema.sql in main", "err", err)
 		os.Exit(1)
 	}
-	slog.Info("init-db: main schema created")
+	slog.Info("main.initDB: exec schema.sql in main: ok")
 
 	err = sqlitex.ExecuteScriptFS(conn, embeddedFS, "seed.sql", &sqlitex.ExecOptions{})
 	if err != nil {
-		slog.Error("init-db: seed", "err", err)
+		slog.Error("main.initDB: exec seed.sql in main", "err", err)
 		os.Exit(1)
 	}
-	slog.Info("init-db: main seed ok")
+	slog.Info("main.initDB: exec seed.sql in main: ok")
 
 	// # Run schema.sql and seed.sql scripts in plugins
 	for _, plugin := range porgs.Plugins {
 		err = sqlitex.ExecuteScriptFS(conn, plugin.GetFS(), "schema.sql", &sqlitex.ExecOptions{})
 		if err != nil {
-			slog.Error("init-db: plugin schema", "plugin", plugin.GetName(), "err", err)
+			slog.Error("main.initDB: exec schema.sql in plugin", "plugin", plugin.GetName(), "err", err)
 			os.Exit(2)
 		}
-		slog.Info("init-db: plugin schema created", "plugin", plugin.GetName())
+		slog.Info("main.initDB: exec schema.sql in plugin: ok", "plugin", plugin.GetName())
 
 		err = sqlitex.ExecuteScriptFS(conn, plugin.GetFS(), "seed.sql", &sqlitex.ExecOptions{})
 		if err != nil {
-			slog.Error("init-db: plugin seed", "plugin", plugin.GetName(), "err", err)
+			slog.Error("main.initDB: exec seed.sql in plugin", "plugin", plugin.GetName(), "err", err)
 			os.Exit(2)
 		}
-		slog.Info("init-db: plugin seed ok", "plugin", plugin.GetName())
+		slog.Info("main.initDB: exec seed.sql in plugin: ok", "plugin", plugin.GetName())
 	}
 }
 
@@ -165,9 +168,10 @@ func initPlugins() {
 	for _, plugin := range porgs.Plugins {
 		err := plugin.GetInit(porgs.Context)
 		if err != nil {
-			slog.Error("init", "plugin", plugin.GetName(), "err", err)
-			os.Exit(4)
+			slog.Error("initPlugins", "plugin", plugin.GetName(), "err", err)
+			os.Exit(2)
 		}
+		slog.Info("initPlugins: ok", "plugin", plugin.GetName())
 	}
 }
 
@@ -177,9 +181,9 @@ func run(ctx context.Context) {
 		Handler: porgs.Handler,
 	}
 	runServer := func() {
-		slog.Info("run: server starting", "host", porgs.BootConfig.Host, "port", porgs.BootConfig.Port)
+		slog.Info("run: listen and serve", "host", porgs.BootConfig.Host, "port", porgs.BootConfig.Port)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			slog.Error("run: server failed", "err", err)
+			slog.Error("run: listen and serve", "err", err)
 		}
 	}
 	go runServer()
@@ -192,13 +196,13 @@ func run(ctx context.Context) {
 		defer wg.Done()
 
 		<-ctx.Done()
-		slog.Info("run: shutdown starting")
+		slog.Info("run: shutdown")
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
-			slog.Error("run: shutdown failed", "err", err)
+			slog.Error("run: shutdown", "err", err)
 		} else {
-			slog.Info("run: shutdown complete")
+			slog.Info("run: shutdown: ok")
 		}
 	}
 	go shutdownGracefully()

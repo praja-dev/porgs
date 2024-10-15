@@ -23,7 +23,7 @@ type View struct {
 func RenderView(w http.ResponseWriter, r *http.Request, view View) {
 	t, ok := Templates[view.Name]
 	if !ok {
-		slog.Error("render", "view", view, "err", "template not found")
+		slog.Error("porgs.RenderView", "view", view, "err", "template not found")
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
@@ -32,7 +32,7 @@ func RenderView(w http.ResponseWriter, r *http.Request, view View) {
 
 	err := t.ExecuteTemplate(w, view.Name, view)
 	if err != nil {
-		slog.Error("render", "view", view, "err", err)
+		slog.Error("porgs.RenderView", "view", view, "err", err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
