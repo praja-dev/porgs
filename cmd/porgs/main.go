@@ -43,12 +43,12 @@ func main() {
 func getBootConfig() porgs.AppBootConfig {
 	host := os.Getenv("PORGS_HOST")
 	if host == "" {
-		slog.Info("getBootConfig: host", "msg", "PORGS_HOST not set or is set to \"\"")
+		slog.Info("getBootConfig: host", "default", "", "msg", "PORGS_HOST not set or is empty")
 	}
 
 	portStr := os.Getenv("PORGS_PORT")
 	if portStr == "" {
-		slog.Info("getBootConfig: port", "msg", "PORGS_PORT not set, default \"8642\"")
+		slog.Info("getBootConfig: port", "default", "8642", "msg", "PORGS_PORT not set")
 		portStr = "8642"
 	}
 	port, err := strconv.Atoi(portStr)
@@ -59,7 +59,7 @@ func getBootConfig() porgs.AppBootConfig {
 
 	dsn := os.Getenv("PORGS_DSN")
 	if dsn == "" {
-		slog.Info("getBootConfig: dsn", "msg", "PORGS_DSN not set, default \"porgs.db\"")
+		slog.Info("getBootConfig: dsn", "default", "porgs.db", "msg", "PORGS_DSN not set")
 		dsn = "porgs.db"
 	}
 

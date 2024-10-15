@@ -43,11 +43,14 @@ func loadOrgs(directory string) {
 		}
 		slog.Info("core.loadOrgs: read cvs files for 1 level: ok", "level", level, "orgsCount", len(orgs))
 
-		if level == 0 && len(orgs) != 1 {
-			slog.Error("core.loadOrgs: check root org", "err", "there can only be one level 0 (root) organization")
-			os.Exit(3)
+		if level == 0 {
+			if len(orgs) != 1 {
+				slog.Error("core.loadOrgs: check root org", "err", "there can only be one level 0 (root) organization")
+				os.Exit(3)
+			} else {
+				slog.Info("core.loadOrgs: check root org: ok")
+			}
 		}
-		slog.Info("core.loadOrgs: check root org: ok")
 
 		if len(orgs) == 0 {
 			slog.Info("core.loadOrgs: ok", "highestLevel", level-1)
@@ -61,7 +64,7 @@ func loadOrgs(directory string) {
 				os.Exit(3)
 			}
 		}
-		slog.Error("core.loadOrgs: save: ok", "level", level, "orgsCount", len(orgs))
+		slog.Info("core.loadOrgs: save: ok", "level", level, "orgsCount", len(orgs))
 
 		level++
 	}
