@@ -16,20 +16,19 @@ func loadData() {
 	if loadDir == "" {
 		return
 	}
-	slog.Info("core: load data", "PORGS_LOAD_DIR", loadDir)
+	slog.Info("core.loadData", "PORGS_LOAD_DIR", loadDir)
 
 	// Check if loadDir is valid
 	info, err := os.Stat(loadDir)
 	if err != nil {
-		slog.Error("core: loadData: check directory",
-			"PORGS_LOAD_DIR", loadDir, "error", err)
+		slog.Error("core.loadData: check directory", "err", err)
 		os.Exit(3)
 	}
 	if !info.IsDir() {
-		slog.Error("core: loadData: check directory",
-			"PORGS_LOAD_DIR", loadDir, "error", "not a directory")
+		slog.Error("core.loadData: check directory", "err", "not a directory")
 		os.Exit(3)
 	}
+	slog.Info("core.loadData: check directory: ok")
 
 	loadOrgs(loadDir)
 }
@@ -39,26 +38,33 @@ func loadOrgs(directory string) {
 	for {
 		orgs, err := readOrgCSVsForLevel(directory, level)
 		if err != nil {
-			slog.Error("loadOrgs", "err", err)
+			slog.Error("core.loadOrgs: read cvs files for 1 level", "level", level, "err", err)
 			os.Exit(3)
+		}
+		slog.Info("core.loadOrgs: read cvs files for 1 level: ok", "level", level, "orgsCount", len(orgs))
+
+		if level == 0 {
+			if len(orgs) != 1 {
+				slog.Error("core.loadOrgs: check root org", "err", "there can only be one level 0 (root) organization")
+				os.Exit(3)
+			} else {
+				slog.Info("core.loadOrgs: check root org: ok")
+			}
 		}
 
 		if len(orgs) == 0 {
+			slog.Info("core.loadOrgs: ok", "highestLevel", level-1)
 			return
-		}
-
-		if level == 0 && len(orgs) != 1 {
-			slog.Error("loadOrgs", "err", "there can only be one level 0 (root) organization")
-			os.Exit(3)
 		}
 
 		for _, org := range orgs {
 			err = SaveOrg(org)
 			if err != nil {
-				slog.Error("loadOrgs", "err", err)
+				slog.Error("core.loadOrgs: save org", "level", level, "org", org, "err", err)
 				os.Exit(3)
 			}
 		}
+		slog.Info("core.loadOrgs: save: ok", "level", level, "orgsCount", len(orgs))
 
 		level++
 	}
@@ -86,6 +92,8 @@ func readOrgCSVsForLevel(directory string, level int) ([]Org, error) {
 }
 
 func readOrgCSV(filePath string) ([]Org, error) {
+	fileName := filepath.Base(filePath)
+
 	// # Open the file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -97,32 +105,33 @@ func readOrgCSV(filePath string) ([]Org, error) {
 	reader := csv.NewReader(file)
 	header, err := reader.Read()
 	if err != nil {
-		return nil, fmt.Errorf("read header: %w", err)
+		return nil, fmt.Errorf("core.readOrgCSV %s: header: %w", fileName, err)
 	}
 	numFields := len(header)
 	if numFields < 6 {
-		return nil, fmt.Errorf("at least 6 columns expected, got: %d", numFields)
+		return nil, fmt.Errorf("core.readOrgCSV %s: header: column count: 6 or more expected, only got: %d",
+			fileName, numFields)
 	}
 
 	// # Validate header has the required 6 fields
 	header[0] = strings.Trim(header[0], "\uFEFF") // Remove BOM
 	if header[0] != "PID" {
-		return nil, fmt.Errorf("PID column expected as field #1, got: %s", header[0])
+		return nil, fmt.Errorf("core.readOrgCSV %s: header: coulmn 1: should be named PID, got \"%s\"", fileName, header[0])
 	}
 	if header[1] != "SID" {
-		return nil, fmt.Errorf("SID column expected as field #2, got: %s", header[1])
+		return nil, fmt.Errorf("core.readOrgCSV %s: header: coulmn 2: should be named SID, got \"%s\"", fileName, header[1])
 	}
 	if header[2] != "ID" {
-		return nil, fmt.Errorf("ID column expected as field #3, got: %s", header[2])
+		return nil, fmt.Errorf("core.readOrgCSV %s: header: coulmn 3: should be named ID, got \"%s\"", fileName, header[2])
 	}
 	if header[3] != "EID" {
-		return nil, fmt.Errorf("EID (ExternalID) column expected as field #4, got: %s", header[3])
+		return nil, fmt.Errorf("core.readOrgCSV %s: header: coulmn 4: should be named EID, got \"%s\"", fileName, header[3])
 	}
 	if header[4] != "ESID" {
-		return nil, fmt.Errorf("ESID (ExternalSID) column expected as field #5, got: %s", header[4])
+		return nil, fmt.Errorf("core.readOrgCSV %s: header: coulmn 5: should be named ESID, got \"%s\"", fileName, header[4])
 	}
 	if header[5] != "NAME" {
-		return nil, fmt.Errorf("NAME column expected as field #6, got: %s", header[5])
+		return nil, fmt.Errorf("core.readOrgCSV %s: header: coulmn 6: should be named NAME, got \"%s\"", fileName, header[5])
 	}
 
 	// # Figure out the column indexes for the various translations of the NAME property
@@ -132,24 +141,26 @@ func readOrgCSV(filePath string) ([]Org, error) {
 	for i := 6; i < numFields; i++ {
 		fld := header[i]
 		if fld == "" {
-			return nil, fmt.Errorf("header: empty field Name at column %d", i+1)
+			return nil, fmt.Errorf("core.readOrgCSV %s: header: column %d: name empty", fileName, i+1)
 		}
 
 		// TODO: Handle fields beyond NAME
 		if !strings.HasPrefix(fld, "NAME_") {
-			slog.Warn("readOrgCSV: invalid field name", "col", i+1, "field", fld)
+			slog.Warn("core.readOrgCSV: header", "fileName",
+				fileName, "column", i+1, "err", fmt.Sprintf("name unrecognized: %s", fld))
+			//core.readOrgCSV
 			continue
 		}
 
 		matches := rxName.FindStringSubmatch(fld)
-
 		if len(matches) != 2 {
-			return nil, fmt.Errorf("header: invalid field Name at column %d: %s", i+1, fld)
+			return nil, fmt.Errorf("core.readOrgCSV %s: header: column %d: name has invalid language suffix: %s",
+				fileName, i+1, fld)
 		}
 		idx := matches[1]
 		indexOfNameByLang[idx] = i
 	}
-	slog.Debug("indexOfNameByLang", "indexOfNameByLang", indexOfNameByLang)
+	slog.Info("core.readOrgCSV: header: ok", "fileName", fileName, "indexOfNameByLang", indexOfNameByLang)
 
 	// # Read the data
 	var orgs []Org
@@ -160,10 +171,12 @@ func readOrgCSV(filePath string) ([]Org, error) {
 			if err.Error() == "EOF" {
 				break
 			}
-			return nil, fmt.Errorf("read line %d: %w", line, err)
+			return nil, fmt.Errorf("core.readOrgCSV %s: data: row %d: %w", fileName, line, err)
 		}
+		// TODO: Compare with the actual number of columns found when parsing the header
 		if len(rec) < 8 {
-			return nil, fmt.Errorf("8 columns expected, got: %d", len(rec))
+			return nil, fmt.Errorf("core.readOrgCSV %s: data: row %d: column count should be 8 or more, found %d",
+				fileName, line, len(rec))
 		}
 
 		org := Org{}
@@ -171,7 +184,8 @@ func readOrgCSV(filePath string) ([]Org, error) {
 		if pidVal != "" {
 			pid, err := strconv.Atoi(pidVal)
 			if err != nil {
-				return nil, fmt.Errorf("line %d: invalid PID: %w", line, err)
+				return nil, fmt.Errorf("core.readOrgCSV %s: data: row %d: column %d: field PID: %w",
+					fileName, line, 1, err)
 			}
 			org.ParentID = int64(pid)
 		}
@@ -179,14 +193,16 @@ func readOrgCSV(filePath string) ([]Org, error) {
 		sidVal := rec[1]
 		sid, err := strconv.Atoi(sidVal)
 		if err != nil {
-			return nil, fmt.Errorf("line %d: invalid SID: %w", line, err)
+			return nil, fmt.Errorf("core.readOrgCSV %s: data: row %d: column %d: field SID: %w",
+				fileName, line, 2, err)
 		}
 		org.SequenceID = int64(sid)
 
 		idVal := rec[2]
 		id, err := strconv.Atoi(idVal)
 		if err != nil {
-			return nil, fmt.Errorf("line %d: invalid OID: %w", line, err)
+			return nil, fmt.Errorf("core.readOrgCSV %s: data: row %d: column %d: field ID: %w",
+				fileName, line, 3, err)
 		}
 		org.ID = int64(id)
 
@@ -195,7 +211,8 @@ func readOrgCSV(filePath string) ([]Org, error) {
 
 		org.Name = rec[5]
 		if rec[5] == "" {
-			return nil, fmt.Errorf("name is required. line: %d, file: %s", line, filePath)
+			return nil, fmt.Errorf("core.readOrgCSV %s: data: row %d: column %d: field NAME: is empty",
+				fileName, line, 6)
 		}
 
 		trlx := make(map[string]OrgProps)
@@ -208,5 +225,6 @@ func readOrgCSV(filePath string) ([]Org, error) {
 		line++
 	}
 
+	slog.Info("core.readOrgCSV: data: ok", "fileName", fileName, "count", len(orgs))
 	return orgs, nil
 }

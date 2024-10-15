@@ -33,7 +33,7 @@ func handleOrg(ctx context.Context) http.Handler {
 		idStr := r.PathValue("id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			slog.Error("handleOrg: can't parse ID", "id", idStr, "err", err)
+			slog.Error("core.handleOrg: parse id", "id", idStr, "err", err)
 			porgs.ShowDefaultErrorPage(w, r)
 			return
 		}
@@ -73,11 +73,11 @@ func GetSubOrgs(ctx context.Context, id int64) ([]Org, error) {
 	defer func() {
 		err = stmt.Reset()
 		if err != nil {
-			slog.Error("GetSubOrgs: stmt reset", "err", err)
+			slog.Error("core.GetSubOrgs: stmt reset", "err", err)
 		}
 		err = stmt.ClearBindings()
 		if err != nil {
-			slog.Error("GetSubOrgs: stmt clear bindings", "err", err)
+			slog.Error("core.GetSubOrgs: stmt clear", "err", err)
 		}
 	}()
 
@@ -109,7 +109,7 @@ func GetSubOrgs(ctx context.Context, id int64) ([]Org, error) {
 		trlxJSON := stmt.GetText("trlx")
 		err = json.Unmarshal([]byte(trlxJSON), &org.Trlx)
 		if err != nil {
-			slog.Error("GetSubOrgs: unmarshal Trlx", "err", err, "trlx", trlxJSON)
+			slog.Error("core.GetSubOrgs: unmarshal trlx", "trlx", trlxJSON, "err", err)
 			return nil, err
 		}
 
@@ -136,11 +136,11 @@ func GetOrg(ctx context.Context, id int64) (Org, error) {
 	defer func() {
 		err = stmt.Reset()
 		if err != nil {
-			slog.Error("GetOrg: stmt reset", "err", err)
+			slog.Error("core.GetOrg: stmt reset", "err", err)
 		}
 		err = stmt.ClearBindings()
 		if err != nil {
-			slog.Error("GetOrg: stmt clear bindings", "err", err)
+			slog.Error("core.GetOrg: stmt clear", "err", err)
 		}
 	}()
 
@@ -170,7 +170,7 @@ func GetOrg(ctx context.Context, id int64) (Org, error) {
 	trlxJSON := stmt.GetText("trlx")
 	err = json.Unmarshal([]byte(trlxJSON), &org.Trlx)
 	if err != nil {
-		slog.Error("GetOrg: unmarshal Trlx", "err", err, "trlx", trlxJSON)
+		slog.Error("core.GetOrg: unmarshal trlx", "trlx", trlxJSON, "err", err)
 		return Org{}, err
 	}
 
@@ -205,11 +205,11 @@ func SaveOrg(org Org) error {
 	defer func() {
 		err = stmt.Reset()
 		if err != nil {
-			slog.Error("SaveOrg: stmt reset", "err", err)
+			slog.Error("core.SaveOrg: stmt reset", "err", err)
 		}
 		err = stmt.ClearBindings()
 		if err != nil {
-			slog.Error("SaveOrg: stmt clear bindings", "err", err)
+			slog.Error("core.SaveOrg: stmt clear", "err", err)
 		}
 	}()
 
@@ -226,7 +226,7 @@ func SaveOrg(org Org) error {
 
 	trlxJSON, err := json.Marshal(org.Trlx)
 	if err != nil {
-		slog.Error("SaveOrg: marshal Trlx", "err", err, "Trlx", org.Trlx)
+		slog.Error("core.SaveOrg: marshal trlx", "trlx", org.Trlx, "err", err)
 		return err
 	}
 	stmt.BindText(10, string(trlxJSON))

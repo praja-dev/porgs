@@ -19,7 +19,7 @@ func getLayoutTemplate() *template.Template {
 
 	layout, err := template.New("layout").Funcs(fm).ParseFS(embeddedFS, "layouts/default.go.html")
 	if err != nil {
-		slog.Error("templates: parse layouts", "err", err)
+		slog.Error("porgs.getLayoutTemplate", "err", err)
 		os.Exit(1)
 	}
 
@@ -46,25 +46,26 @@ func parseViewTemplates(embedFS embed.FS, layout *template.Template) map[string]
 
 	viewFiles, err := fs.Glob(embedFS, "views/*.go.html")
 	if err != nil {
-		slog.Error("parse views", "err", err)
+		slog.Error("porgs.parseViewTemplates", "err", err)
 		os.Exit(1)
 	}
 	for _, viewFile := range viewFiles {
 		viewNameMatches := rgxpViewName.FindStringSubmatch(viewFile)
 		if viewNameMatches == nil {
-			slog.Error("parse view: incorrect file name", "file", viewFile)
+			slog.Error("porgs.parseViewTemplates: get view name",
+				"viewFile", viewFile, "err", "incorrect file name")
 			os.Exit(1)
 		}
 		viewName := viewNameMatches[1]
 
 		tp, err := layout.Clone()
 		if err != nil {
-			slog.Error("clone layout", "err", err)
+			slog.Error("porgs.parseViewTemplates: clone layout", "err", err)
 			os.Exit(1)
 		}
 		tp, err = tp.ParseFS(embedFS, viewFile)
 		if err != nil {
-			slog.Error("parse view", "view", viewName, "err", err)
+			slog.Error("porgs.parseViewTemplates: parse", "viewName", viewName, "err", err)
 			os.Exit(1)
 		}
 		tm[viewName] = tp
