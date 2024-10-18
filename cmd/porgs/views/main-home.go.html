@@ -10,7 +10,7 @@
 {{ define "screen" }}
     <main>
         <div class="dashboard">
-        {{- range $name, $plugin := .Plugins }}
+        {{- range $name, $plugin := .Data.Plugins }}
             <div>
                 <h3><a href="/{{$name}}">{{$name}}</a></h3>
                 <ul>

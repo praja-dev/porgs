@@ -10,23 +10,27 @@
 
 {{ define "screen" }}
 <main>
-    <h3>{{ .Name }}</h3>
-    {{ if not .SubOrgs }}
+    {{ $LANG := .Lang }}
+    {{ $D := .Data }}
+    {{ $OP := (index $D.Trlx $LANG)}}
+    <h3>{{ $OP.Name }}</h3>
+    {{ if not $D.SubOrgs }}
         <div>
             <p>No sub-organizations.</p>
         </div>
     {{ end }}
     <div>
-        {{ range .SubOrgs }}
+        {{ range $D.SubOrgs }}
+            {{ $SOP := (index .Trlx $LANG)}}
             <p>
-                <a href="/core/org/{{ .ID }}">{{ .Name }}</a>
+                <a href="/core/org/{{ .ID }}">{{ $SOP.Name }}</a>
             </p>
         {{ end }}
     </div>
     <hr />
     <p>
-        {{ if gt .ParentID 0 }}
-            <a href="/core/org/{{ .ParentID }}">Back</a>
+        {{ if gt $D.ParentID 0 }}
+            <a href="/core/org/{{ $D.ParentID }}">Back</a>
         {{ else }}
             <a href="/home">Back</a>
         {{ end }}

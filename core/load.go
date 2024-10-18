@@ -217,8 +217,9 @@ func readOrgCSV(filePath string) ([]Org, error) {
 
 		trlx := make(map[string]OrgProps)
 		for k, v := range indexOfNameByLang {
-			trlx[k] = OrgProps{Name: rec[v]}
+			trlx[strings.ToLower(k)] = OrgProps{Name: rec[v]}
 		}
+		trlx["en"] = OrgProps{Name: org.Name}
 		org.Trlx = trlx
 
 		orgs = append(orgs, org)
