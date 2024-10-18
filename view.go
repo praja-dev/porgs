@@ -12,6 +12,9 @@ type View struct {
 	// Title is the display name of the view
 	Title string
 
+	// Lang is the language to render the view in
+	Lang string
+
 	// User is the user to render the view for
 	User User
 
@@ -28,8 +31,19 @@ func RenderView(w http.ResponseWriter, r *http.Request, view View) {
 		return
 	}
 
-	view.User = r.Context().Value("user").(User)
+	lang, ok := r.Context().Value("lang").(string)
+	if !ok {
+		lang = SiteConfig.LangDefault
+	}
+	view.Lang = lang
 
+	user, ok := r.Context().Value("user").(User)
+	if !ok {
+		user = User{Name: AnonUser}
+	}
+	view.User = user
+
+	slog.Info("porgs.RenderView", "view", view.Name, "lang", lang, "user", user.Name)
 	err := t.ExecuteTemplate(w, view.Name, view)
 	if err != nil {
 		slog.Error("porgs.RenderView", "view", view, "err", err)

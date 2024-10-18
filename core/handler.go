@@ -1,22 +1,21 @@
 package core
 
 import (
-	"context"
 	"github.com/praja-dev/porgs"
 	"net/http"
 )
 
-func (p *Plugin) GetHandler(ctx context.Context) *http.ServeMux {
+func (p *Plugin) GetHandler() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.Handle("GET /{$}", handleRoot(ctx))
-	mux.Handle("GET /orgs", handleOrgs(ctx))
-	mux.Handle("GET /org/{id}", handleOrg(ctx))
+	mux.Handle("GET /{$}", handleRoot())
+	mux.Handle("GET /orgs", handleOrgs())
+	mux.Handle("GET /org/{id}", handleOrg())
 
 	return mux
 }
 
-func handleRoot(_ context.Context) http.Handler {
+func handleRoot() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		porgs.RenderView(w, r, porgs.View{Name: "core-root", Title: "Core"})
 	})

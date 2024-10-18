@@ -20,8 +20,10 @@ type AppBootConfig struct {
 
 // AppSiteConfig struct holds the website configuration.
 type AppSiteConfig struct {
-	Title       string
-	Description string
+	Title         string
+	Description   string
+	LangSupported []string
+	LangDefault   string
 }
 
 // Plugin interface for PORGS plugin integration.
@@ -42,7 +44,7 @@ type Plugin interface {
 	GetFS() embed.FS
 
 	// GetHandler returns the plugin's HTTP router.
-	GetHandler(ctx context.Context) *http.ServeMux
+	GetHandler() *http.ServeMux
 
 	// GetInit initializes the plugin.
 	GetInit(ctx context.Context) error

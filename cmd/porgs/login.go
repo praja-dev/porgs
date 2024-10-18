@@ -127,7 +127,7 @@ func handleLoginPost() http.Handler {
 
 		// # Set the session token in an HttpOnly cookie
 		cookie := http.Cookie{
-			Name:     porgs.SessionCookieName,
+			Name:     porgs.CookieNameSession,
 			Path:     "/",
 			Value:    token,
 			MaxAge:   int(24 * time.Hour),
@@ -189,7 +189,7 @@ func handleLogout() http.Handler {
 
 		// # Delete cookie
 		cookie := http.Cookie{
-			Name:     porgs.SessionCookieName,
+			Name:     porgs.CookieNameSession,
 			Path:     "/",
 			Value:    "",
 			MaxAge:   -1,

@@ -85,8 +85,10 @@ func getDbConnPool() *sqlitex.Pool {
 
 func getSiteConfig() porgs.AppSiteConfig {
 	return porgs.AppSiteConfig{
-		Title:       "Ourville",
-		Description: "A website powered by Praja Organizations (PORGS)",
+		Title:         "Ourville",
+		Description:   "A website powered by Praja Organizations (PORGS)",
+		LangSupported: []string{"en", "si", "ta"},
+		LangDefault:   "en",
 	}
 
 }

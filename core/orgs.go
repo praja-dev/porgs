@@ -12,9 +12,9 @@ import (
 	"time"
 )
 
-func handleOrgs(ctx context.Context) http.Handler {
+func handleOrgs() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		org, err := GetOrg(ctx, 1)
+		org, err := GetOrg(r.Context(), 1)
 		if err != nil {
 			porgs.ShowErrorPage(w, r, porgs.ErrorPage{
 				Msg:     "There are no defined organizations. Please add one.",
@@ -28,7 +28,7 @@ func handleOrgs(ctx context.Context) http.Handler {
 	})
 }
 
-func handleOrg(ctx context.Context) http.Handler {
+func handleOrg() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		id, err := strconv.Atoi(idStr)
@@ -38,7 +38,7 @@ func handleOrg(ctx context.Context) http.Handler {
 			return
 		}
 
-		org, err := GetOrg(ctx, int64(id))
+		org, err := GetOrg(r.Context(), int64(id))
 		if err != nil {
 			if errors.Is(err, porgs.ErrNotFound) {
 				porgs.ShowErrorPage(w, r, porgs.ErrorPage{

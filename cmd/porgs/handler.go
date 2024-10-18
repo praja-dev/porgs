@@ -11,17 +11,18 @@ import (
 func getHandlers() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.Handle("/a/", getAssetHandler())
-	mux.Handle("GET /{$}", idUser(handleRoot()))
-	mux.Handle("GET /login", idUser(handleLoginGet()))
-	mux.Handle("POST /login", idUser(handleLoginPost()))
-	mux.Handle("GET /logout", idUser(rejectAnon(handleLogout())))
-	mux.Handle("GET /home", idUser(rejectAnon(handleHome())))
+	mux.Handle("/a/", idLang(getAssetHandler()))
+	mux.Handle("GET /{$}", idLang(idUser(handleRoot())))
+	mux.Handle("GET /lang/{id}", idUser(handleLang()))
+	mux.Handle("GET /login", idLang(idUser(handleLoginGet())))
+	mux.Handle("POST /login", idLang(idUser(handleLoginPost())))
+	mux.Handle("GET /logout", idLang(idUser(rejectAnon(handleLogout()))))
+	mux.Handle("GET /home", idLang(idUser(rejectAnon(handleHome()))))
 
 	for name, plugin := range porgs.Plugins {
 		mux.Handle("/a/"+name+"/", getPluginAssetHandler(plugin))
-		mux.Handle("/"+name+"/", idUser(rejectAnon(
-			http.StripPrefix("/"+name, plugin.GetHandler(porgs.Context)))))
+		mux.Handle("/"+name+"/", idLang(idUser(rejectAnon(
+			http.StripPrefix("/"+name, plugin.GetHandler())))))
 	}
 
 	return mux

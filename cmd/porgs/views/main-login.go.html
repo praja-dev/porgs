@@ -14,7 +14,7 @@
                 <legend>Login</legend>
                 <div class="field">
                     <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" value="{{.Usr}}" required aria-required="true">
+                    <input type="text" id="username" name="username" value="{{ .Data.Usr }}" required aria-required="true">
                 </div>
                 <div class="field">
                     <label for="password">Password:</label>
@@ -24,7 +24,7 @@
                     <button type="submit" class="primary">Login</button>
                 </div>
                 <p>
-                    {{.Msg}}
+                    {{ .Data.Msg }}
                 </p>
             </fieldset>
         </form>

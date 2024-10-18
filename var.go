@@ -36,4 +36,5 @@ var ErrNotImplemented = errors.New("not implemented")
 var ErrNotFound = errors.New("not found")
 
 const AnonUser = "anon"
-const SessionCookieName = "session"
+const CookieNameSession = "session"
+const CookieNameLang = "lang"
