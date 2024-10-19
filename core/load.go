@@ -3,6 +3,7 @@ package core
 import (
 	"encoding/csv"
 	"fmt"
+	"github.com/praja-dev/porgs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -12,11 +13,16 @@ import (
 )
 
 func loadData() {
-	loadDir := os.Getenv("PORGS_LOAD_DIR")
-	if loadDir == "" {
+	loadDir, ok := porgs.Args["--load"]
+	if !ok {
 		return
 	}
-	slog.Info("core.loadData", "PORGS_LOAD_DIR", loadDir)
+	if loadDir == "" {
+		slog.Error("core.loadData", "err",
+			"--load arg value should be the source directory path - e.g. --load=~/src/lk-data/admin")
+		os.Exit(3)
+	}
+	slog.Info("core.loadData", "path", loadDir)
 
 	// Check if loadDir is valid
 	info, err := os.Stat(loadDir)

@@ -8,6 +8,9 @@ import (
 	"zombiezen.com/go/sqlite/sqlitex"
 )
 
+// Args holds command-line arguments.
+var Args map[string]string
+
 // Context is the root context for the system.
 var Context context.Context
 

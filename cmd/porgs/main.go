@@ -12,7 +12,9 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 	"zombiezen.com/go/sqlite/sqlitex"
@@ -27,6 +29,7 @@ var embeddedFS embed.FS
 
 func main() {
 	porgs.Context = context.Background()
+	porgs.Args = parseArgs()
 	porgs.BootConfig = getBootConfig()
 	porgs.DbConnPool = getDbConnPool()
 	porgs.SiteConfig = getSiteConfig()
@@ -38,6 +41,41 @@ func main() {
 	initDB()
 	initPlugins()
 	run(porgs.Context)
+}
+
+func parseArgs() map[string]string {
+	args := make(map[string]string)
+	for _, arg := range os.Args[1:] {
+		parts := strings.Split(arg, "=")
+		if len(parts) != 2 {
+			slog.Error("parseArgs", "arg", arg, "err", "invalid argument")
+			os.Exit(1)
+		}
+		name := parts[0]
+		value := parts[1]
+
+		// # Handle ~ and %USERPROFILE% in --load arg value
+		if name == "--load" {
+			if strings.HasPrefix(value, "~") || strings.HasPrefix(value, "%USERPROFILE%") {
+				home, err := os.UserHomeDir()
+				if err != nil {
+					slog.Error("parseArgs", "arg", "--load", "err", err)
+					os.Exit(1)
+				}
+
+				if strings.HasPrefix(value, "~") {
+					value = filepath.Join(home, value[1:])
+				} else {
+					value = filepath.Join(home, value[13:])
+				}
+			}
+		}
+
+		args[name] = value
+	}
+	slog.Info("parseArgs: ok")
+
+	return args
 }
 
 func getBootConfig() porgs.AppBootConfig {
