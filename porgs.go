@@ -1,7 +1,6 @@
 package porgs
 
 import (
-	"context"
 	"embed"
 	"net/http"
 )
@@ -47,5 +46,5 @@ type Plugin interface {
 	GetHandler() *http.ServeMux
 
 	// GetInit initializes the plugin.
-	GetInit(ctx context.Context) error
+	GetInit() error
 }

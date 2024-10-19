@@ -1,10 +1,6 @@
 package core
 
-import (
-	"context"
-)
-
-func (p *Plugin) GetInit(_ context.Context) error {
+func (p *Plugin) GetInit() error {
 	loadData()
 	return nil
 }

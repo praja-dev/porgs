@@ -168,7 +168,7 @@ func initDB() {
 
 func initPlugins() {
 	for _, plugin := range porgs.Plugins {
-		err := plugin.GetInit(porgs.Context)
+		err := plugin.GetInit()
 		if err != nil {
 			slog.Error("initPlugins", "plugin", plugin.GetName(), "err", err)
 			os.Exit(2)
