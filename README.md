@@ -15,15 +15,22 @@ within community and government organizations.
 
 [Setup](https://go.dev/doc/install) a Go development environment.
 
-Clone the source code repository:
+On UNIX inspired systems:
 ```shell
+cd ~/src
 git clone https://github.com/praja-dev/porgs.git
+git clone https://github.com/praja-dev/lk-data.git
+cd ~/src/porgs
+go run ./cmd/porgs --load=~/lk-data/admin
 ```
 
-Run the web app:
+On Windows:
 ```shell
-cd porgs
-go run ./cmd/porgs
+cd %USERPROFILE%\src
+git clone https://github.com/praja-dev/porgs.git
+git clone https://github.com/praja-dev/lk-data.git
+cd %USERPROFILE%\src\porgs
+go run .\cmd\porgs --load=%USERPROFILE%\lk-data\admin
 ```
 
 Open http://localhost:8642 on a web browser.
@@ -34,10 +41,25 @@ The home page (`/home`) lists the links to access functionality contributed by t
 
 Enter `Ctrl+C` to stop the porgs web app.
 
-Run the web app again—this time loading example data from `./examples/lk/data` directory.
+When starting again, don't use the `--load` argument.
 ```shell
-PORGS_LOAD_DIR=./examples/lk/data go run ./cmd/porgs
+go run ./cmd/porgs
 ```
+
+The database is created in the same directory and has the name `porgs.db`.
+This can be changed using the `PORGS_DSN` environment variable.
+
+The database consists of three files:
+- `porgs.db` - the main SQLite database file containing all tables, indexes etc.
+- `porgs.db-wal` - write-ahead log file needed for WAL mode
+- `porgs.db-shm` - shared memory file needed for WAL mode
+
+You can safely delete these files to start fresh.
+
+The [praja-dev/lk-data](https://github.com/praja-dev/lk-data.git) project is for creating a base dataset
+for Sri Lanka starting from the country level (level 0 admin unit) down to the village level (level 4 admin unit).
+
+For a truncated version of the lk-data dataset, refer to the [examples/lk/data directory](examples/lk/data) in the porgs project.  
 
 ## Design
 
