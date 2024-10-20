@@ -4,7 +4,7 @@ package main
 var text = map[string]map[string]string{
 	"en": {
 		"core":                 "People and Organizations",
-		"task":                 "Work",
+		"task":                 "Work & Responsibilities",
 		"site-title":           "Sri Lanka",
 		"menu_home":            "home",
 		"menu_login":           "login",
@@ -21,7 +21,7 @@ var text = map[string]map[string]string{
 	},
 	"si": {
 		"core":                 "පුද්ගලයන් සහ සංවිධාන",
-		"task":                 "වැඩ",
+		"task":                 "වගකීම් සහ වැඩ",
 		"site-title":           "ශ්‍රී ලංකාව",
 		"menu_home":            "මුල් පිටුව",
 		"menu_login":           "ඇතුල් වන්න",
@@ -38,7 +38,7 @@ var text = map[string]map[string]string{
 	},
 	"ta": {
 		"core":                 "மக்கள் மற்றும் அமைப்புகள்",
-		"task":                 "பணி",
+		"task":                 "வேலை & பொறுப்புகள்",
 		"site-title":           "இலங்கை",
 		"menu_home":            "முகப்பு",
 		"menu_login":           "உள்நுழை",
