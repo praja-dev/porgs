@@ -8,15 +8,17 @@
 {{ define "scripts" }}{{ end }}
 
 {{ define "screen" }}
+    {{ $L := .Lang }}
     <main>
         <div class="dashboard">
-        {{- range $name, $plugin := .Data.Plugins }}
+            <div>{{ t $L "home_logged_in_as"}}: <strong>{{ .User.Name }}</strong></div>
+            {{- range $name, $plugin := .Data.Plugins }}
             <div>
-                <h3><a href="/{{$name}}">{{$name}}</a></h3>
+                <h3><a href="/{{$name}}">{{ t $L $name}}</a></h3>
                 <ul>
                 {{ range $cap := $plugin.GetCapabilities }}
                     {{ if $cap.DashUrlPath }}
-                    <li><a href="/{{$name}}/{{$cap.DashUrlPath}}">{{$cap.Description}}</a></li>
+                    <li><a href="/{{$name}}/{{$cap.DashUrlPath}}">{{ t $L $cap.Description}}</a></li>
                     {{ end }}
                 {{ end }}
                 </ul>

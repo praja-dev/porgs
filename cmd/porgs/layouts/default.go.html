@@ -8,6 +8,7 @@
     <title>{{ or .Title cfg.Title }}</title>
     <meta name="description" content="{{ cfg.Description }}">
     <link rel="icon" href="/a/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap">
     <link rel="stylesheet" href="/a/app.css">
     {{ template "styles" }}
     {{ template "scripts" }}
@@ -15,14 +16,14 @@
 <body>
 <header>
     <nav>
-        <div><a href="/">{{ cfg.Title }}</a></div>
+        <div><a href="/">{{ t .Lang "site-title" }}</a></div>
         <div></div>
         <div>
             {{- if ne .User.Name "anon"}}
-            <a href="/home">{{ .User.Name }}</a>&nbsp;⋄
-            <a href="/logout">logout</a>
+            <a href="/home">{{ t .Lang "menu_home"}}</a>&nbsp;⋄
+            <a href="/logout">{{ t .Lang "menu_logout"}}</a>
             {{- else if ne .Name "main-login" }}
-            <a href="/login">login</a>
+            <a href="/login">{{ t .Lang "menu_login"}}</a>
             {{- end }}
         </div>
     </nav>
@@ -32,9 +33,9 @@
     <nav>
         <div></div>
         <div>
-            <a href="/lang/en">English</a>&nbsp;⋄
-            <a href="/lang/si">Sinhala</a>&nbsp;⋄
-            <a href="/lang/ta">Tamil</a>
+            {{ if eq .Lang "en" }}<span>English</span>{{ else }}<a href="/lang/en">English</a>{{ end}}&nbsp;⋄
+            {{ if eq .Lang "si" }}<span>සිංහල</span>{{ else }}<a href="/lang/si">සිංහල</a>{{ end}}&nbsp;⋄
+            {{ if eq .Lang "ta" }}<span>தமிழ்</span>{{ else }}<a href="/lang/ta">தமிழ்</a>{{ end}}
         </div>
         <div></div>
     </nav>

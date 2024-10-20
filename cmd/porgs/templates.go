@@ -15,6 +15,20 @@ func getLayoutTemplate() *template.Template {
 		"cfg": func() porgs.AppSiteConfig {
 			return porgs.SiteConfig
 		},
+		"t": func(lang string, key string) string {
+			txt, ok := porgs.SiteConfig.Text[lang]
+			if !ok {
+				txt = porgs.SiteConfig.Text[porgs.SiteConfig.LangDefault]
+			}
+			val, ok := txt[key]
+			if !ok {
+				val = porgs.SiteConfig.Text[porgs.SiteConfig.LangDefault][key]
+			}
+			if val == "" {
+				val = key
+			}
+			return val
+		},
 	}
 
 	layout, err := template.New("layout").Funcs(fm).ParseFS(embeddedFS, "layouts/default.go.html")

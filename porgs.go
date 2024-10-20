@@ -23,6 +23,7 @@ type AppSiteConfig struct {
 	Description   string
 	LangSupported []string
 	LangDefault   string
+	Text          map[string]map[string]string
 }
 
 // Plugin interface for PORGS plugin integration.
