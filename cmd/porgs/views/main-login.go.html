@@ -11,17 +11,17 @@
     <main class="login screen">
         <form action="/login" method="post">
             <fieldset>
-                <legend>Login</legend>
+                <legend>{{ t .Lang "login_login" }}</legend>
                 <div class="field">
-                    <label for="username">Username:</label>
+                    <label for="username">{{ t .Lang "login_username" }}:</label>
                     <input type="text" id="username" name="username" value="{{ .Data.Usr }}" required aria-required="true">
                 </div>
                 <div class="field">
-                    <label for="password">Password:</label>
+                    <label for="password">{{ t .Lang "login_password" }}:</label>
                     <input type="password" id="password" name="password" required aria-required="true">
                 </div>
                 <div>
-                    <button type="submit" class="primary">Login</button>
+                    <button type="submit" class="primary">{{ t .Lang "login_login" }}</button>
                 </div>
                 <p>
                     {{ .Data.Msg }}

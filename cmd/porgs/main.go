@@ -127,6 +127,7 @@ func getSiteConfig() porgs.AppSiteConfig {
 		Description:   "A website powered by Praja Organizations (PORGS)",
 		LangSupported: []string{"en", "si", "ta"},
 		LangDefault:   "en",
+		Text:          text,
 	}
 
 }
