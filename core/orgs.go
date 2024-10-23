@@ -219,7 +219,7 @@ func SaveOrg(org Org) error {
 	stmt.BindInt64(3, org.ParentID)
 	stmt.BindInt64(4, org.SequenceID)
 	stmt.BindInt64(5, 0)
-	stmt.BindInt64(6, 1)
+	stmt.BindInt64(6, org.Type)
 	stmt.BindText(7, org.ExternalID)
 	stmt.BindText(8, org.ExternalSID)
 	stmt.BindText(9, org.Name)
