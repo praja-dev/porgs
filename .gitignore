@@ -7,9 +7,10 @@
 # Allow this .gitignore file and the ones in subdirectories
 !/.gitignore
 
-# Allow LICENSE and README files in the root directory only.
+# Allow the files containing project details
 !/LICENSE
 !/README.md
+!/TODO.md
 
 # Module and checksum files
 !go.mod
