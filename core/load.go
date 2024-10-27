@@ -103,7 +103,12 @@ func readOrgCSVsForLevel(directory string, level int) ([]Org, error) {
 func readOrgCSV(filePath string) ([]Org, error) {
 	fileName := filepath.Base(filePath)
 
-	orgType, err := getOrgTypeFromFilename(fileName)
+	// # Get the organization type from the filename
+	orgTypeID, err := getOrgTypeFromFileName(fileName)
+	if err != nil {
+		return nil, err
+	}
+	orgType, err := GetOrgType(porgs.Context, orgTypeID)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +197,7 @@ func readOrgCSV(filePath string) ([]Org, error) {
 				fileName, line, len(rec))
 		}
 
-		org := Org{Type: orgType}
+		org := Org{Type: orgType.ID}
 		pidVal := rec[0]
 		if pidVal != "" {
 			pid, err := strconv.Atoi(pidVal)
@@ -243,7 +248,7 @@ func readOrgCSV(filePath string) ([]Org, error) {
 	return orgs, nil
 }
 
-func getOrgTypeFromFilename(fileName string) (int64, error) {
+func getOrgTypeFromFileName(fileName string) (int64, error) {
 	matches := rxOrgFileName.FindStringSubmatch(fileName)
 	if len(matches) < 2 {
 		return 0, fmt.Errorf("invalid filename pattern: %s", fileName)
