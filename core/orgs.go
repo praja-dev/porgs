@@ -219,7 +219,7 @@ func SaveOrg(org Org) error {
 	stmt.BindInt64(3, org.ParentID)
 	stmt.BindInt64(4, org.SequenceID)
 	stmt.BindInt64(5, 0)
-	stmt.BindInt64(6, 1)
+	stmt.BindInt64(6, org.Type)
 	stmt.BindText(7, org.ExternalID)
 	stmt.BindText(8, org.ExternalSID)
 	stmt.BindText(9, org.Name)
@@ -239,4 +239,55 @@ func SaveOrg(org Org) error {
 	}
 
 	return nil
+}
+
+// GetOrgType retrieves the org_type with the given ID
+func GetOrgType(ctx context.Context, id int64) (OrgType, error) {
+	conn, err := porgs.DbConnPool.Take(ctx)
+	if err != nil {
+		return OrgType{}, err
+	}
+	defer porgs.DbConnPool.Put(conn)
+
+	stmt, err := conn.Prepare(`SELECT id, created, updated, name, description, cxp FROM org_type WHERE id=?`)
+	if err != nil {
+		return OrgType{}, err
+	}
+	defer func() {
+		err = stmt.Reset()
+		if err != nil {
+			slog.Error("core.GetOrgType: stmt reset", "err", err)
+		}
+		err = stmt.ClearBindings()
+		if err != nil {
+			slog.Error("core.GetOrgType: stmt clear", "err", err)
+		}
+	}()
+
+	stmt.BindInt64(1, id)
+
+	hasRow, err := stmt.Step()
+	if err != nil {
+		return OrgType{}, err
+	}
+	if !hasRow {
+		return OrgType{}, porgs.ErrNotFound
+	}
+
+	orgType := OrgType{
+		ID:          id,
+		Created:     stmt.GetInt64("created"),
+		Updated:     stmt.GetInt64("updated"),
+		Name:        stmt.GetText("name"),
+		Description: stmt.GetText("description"),
+	}
+
+	cxpJSON := stmt.GetText("cxp")
+	err = json.Unmarshal([]byte(cxpJSON), &orgType.XProps)
+	if err != nil {
+		slog.Error("core.GetOrgType: unmarshal cxp", "cxp", cxpJSON, "err", err)
+		return OrgType{}, err
+	}
+
+	return orgType, nil
 }

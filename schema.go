@@ -31,3 +31,12 @@ type Access struct {
 	Details    string
 	Timestamp  string
 }
+
+// CxpType represents the type of custom property on an entity—e.g. an organization or person
+type CxpType struct {
+	Name     string
+	Type     string
+	Range    string
+	Default  string
+	Required bool
+}

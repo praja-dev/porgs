@@ -33,6 +33,16 @@ type Org struct {
 	SubOrgs    []Org
 }
 
+// OrgType represents a type of organization.
+type OrgType struct {
+	ID          int64
+	Created     int64
+	Updated     int64
+	Name        string
+	Description string
+	XProps      []porgs.CxpType
+}
+
 // OrgProps contains properties common to all organization types
 type OrgProps struct{ Name string }
 

@@ -24,11 +24,6 @@ CREATE TABLE IF NOT EXISTS org
     source INTEGER NOT NULL DEFAULT 0,
 
     -- ## Organization Type
-    -- 1: Organization
-    -- 2: Country, 3: Region, 4: State, 5: Province, 6: County, 7: District, 8: City, 9: Town, 10: Village
-    -- 1000: Sri Lanka, 1001: Sri Lanka Province, 1002: Sri Lanka District
-    -- 1003: Sri Lanka DS Division, 1004: Sri Lanka GN Division, 1005: Sri Lanka Village
-    ---1010: Sri Lanka Electoral District, 1011: Sri Lanka Polling Division, 1012: Sri Lanka Polling District
     type    INTEGER NOT NULL DEFAULT 1,
 
     external_id TEXT,
@@ -47,6 +42,16 @@ CREATE TABLE IF NOT EXISTS org
     cxp_trlx TEXT,
 
     FOREIGN KEY (parent) REFERENCES org (id)
+);
+
+CREATE TABLE IF NOT EXISTS org_type
+(
+    id          INTEGER PRIMARY KEY,
+    created     INTEGER NOT NULL,
+    updated     INTEGER NOT NULL,
+    name        TEXT    NOT NULL,
+    description TEXT,
+    cxp         TEXT
 );
 
 CREATE TABLE IF NOT EXISTS external_org

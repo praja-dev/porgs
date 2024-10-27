@@ -12,6 +12,9 @@ import (
 	"strings"
 )
 
+var rxOrgFileName = regexp.MustCompile(`L\d-(\d+)-`)
+var rxOrgName = regexp.MustCompile(`NAME_(.+)`)
+
 func loadData() {
 	loadDir, ok := porgs.Args["--load"]
 	if !ok {
@@ -100,6 +103,16 @@ func readOrgCSVsForLevel(directory string, level int) ([]Org, error) {
 func readOrgCSV(filePath string) ([]Org, error) {
 	fileName := filepath.Base(filePath)
 
+	// # Get the organization type from the filename
+	orgTypeID, err := getOrgTypeFromFileName(fileName)
+	if err != nil {
+		return nil, err
+	}
+	orgType, err := GetOrgType(porgs.Context, orgTypeID)
+	if err != nil {
+		return nil, err
+	}
+
 	// # Open the file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -143,7 +156,6 @@ func readOrgCSV(filePath string) ([]Org, error) {
 	// # Figure out the column indexes for the various translations of the NAME property
 	// # e.g. NAME_SI, NAME_TA, NAME_FR, ...
 	indexOfNameByLang := make(map[string]int)
-	rxName := regexp.MustCompile(`NAME_(.+)`)
 	for i := 6; i < numFields; i++ {
 		fld := header[i]
 		if fld == "" {
@@ -158,7 +170,7 @@ func readOrgCSV(filePath string) ([]Org, error) {
 			continue
 		}
 
-		matches := rxName.FindStringSubmatch(fld)
+		matches := rxOrgName.FindStringSubmatch(fld)
 		if len(matches) != 2 {
 			return nil, fmt.Errorf("core.readOrgCSV %s: header: column %d: name has invalid language suffix: %s",
 				fileName, i+1, fld)
@@ -185,7 +197,7 @@ func readOrgCSV(filePath string) ([]Org, error) {
 				fileName, line, len(rec))
 		}
 
-		org := Org{}
+		org := Org{Type: orgType.ID}
 		pidVal := rec[0]
 		if pidVal != "" {
 			pid, err := strconv.Atoi(pidVal)
@@ -234,4 +246,18 @@ func readOrgCSV(filePath string) ([]Org, error) {
 
 	slog.Info("core.readOrgCSV: data: ok", "fileName", fileName, "count", len(orgs))
 	return orgs, nil
+}
+
+func getOrgTypeFromFileName(fileName string) (int64, error) {
+	matches := rxOrgFileName.FindStringSubmatch(fileName)
+	if len(matches) < 2 {
+		return 0, fmt.Errorf("invalid filename pattern: %s", fileName)
+	}
+
+	orgType, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return 0, fmt.Errorf("can't convert to integer: %s", matches[1])
+	}
+
+	return int64(orgType), nil
 }
