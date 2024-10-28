@@ -197,7 +197,7 @@ func readOrgCSV(filePath string) ([]Org, error) {
 				fileName, line, len(rec))
 		}
 
-		org := Org{Type: orgType.ID}
+		org := Org{TypeID: orgType.ID}
 		pidVal := rec[0]
 		if pidVal != "" {
 			pid, err := strconv.Atoi(pidVal)
