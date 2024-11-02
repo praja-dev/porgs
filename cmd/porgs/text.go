@@ -1,8 +1,13 @@
 package main
 
 // TODO: Main should combine translations from each plugin.
+// TODO: L1NAME, ... should be a site-wide configuration
 var text = map[string]map[string]string{
 	"en": {
+		"L1NAME":               "Province",
+		"L2NAME":               "District",
+		"L3NAME":               "District Secretariat Division",
+		"L4NAME":               "Grama Niladhari Division",
 		"core":                 "People and Organizations",
 		"task":                 "Work & Responsibilities",
 		"site-title":           "Sri Lanka",
@@ -20,6 +25,10 @@ var text = map[string]map[string]string{
 		"Create person record": "Create person record",
 	},
 	"si": {
+		"L1NAME":               "පළාත",
+		"L2NAME":               "දිස්ත්‍රික්කය",
+		"L3NAME":               "ප්‍රාදේශීය ලේකම් කොට්ඨාසය",
+		"L4NAME":               "ග්‍රාම නිලධාරී කොට්ඨාශය",
 		"core":                 "පුද්ගලයන් සහ සංවිධාන",
 		"task":                 "වගකීම් සහ වැඩ",
 		"site-title":           "ශ්‍රී ලංකාව",
@@ -37,6 +46,10 @@ var text = map[string]map[string]string{
 		"Create person record": "අළුත් පුද්ගල රෙකෝඩයක් සාදන්න",
 	},
 	"ta": {
+		"L1NAME":               "மாகாணம்",
+		"L2NAME":               "மாவட்டம்",
+		"L3NAME":               "மாவட்டச் செயலகப் பிரிவு",
+		"L4NAME":               "கிராம அலுவலர் பிரிவு",
 		"core":                 "மக்கள் மற்றும் அமைப்புகள்",
 		"task":                 "வேலை & பொறுப்புகள்",
 		"site-title":           "இலங்கை",

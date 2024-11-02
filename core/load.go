@@ -90,7 +90,7 @@ func readOrgCSVsForLevel(directory string, level int) ([]Org, error) {
 
 	var orgs []Org
 	for _, file := range matches {
-		orgsInFile, err := readOrgCSV(file)
+		orgsInFile, err := readOrgCSV(file, level)
 		if err != nil {
 			return nil, err
 		}
@@ -100,7 +100,7 @@ func readOrgCSVsForLevel(directory string, level int) ([]Org, error) {
 	return orgs, nil
 }
 
-func readOrgCSV(filePath string) ([]Org, error) {
+func readOrgCSV(filePath string, level int) ([]Org, error) {
 	fileName := filepath.Base(filePath)
 
 	// # Get the organization type from the filename
@@ -197,7 +197,7 @@ func readOrgCSV(filePath string) ([]Org, error) {
 				fileName, line, len(rec))
 		}
 
-		org := Org{Type: orgType.ID}
+		org := Org{TypeID: orgType.ID}
 		pidVal := rec[0]
 		if pidVal != "" {
 			pid, err := strconv.Atoi(pidVal)
@@ -234,10 +234,20 @@ func readOrgCSV(filePath string) ([]Org, error) {
 		}
 
 		trlx := make(map[string]OrgProps)
-		for k, v := range indexOfNameByLang {
-			trlx[strings.ToLower(k)] = OrgProps{Name: rec[v]}
+		orgTypeNameAtLevel := func(lang string, level int) string {
+			key := fmt.Sprintf("L%dNAME", level)
+			val, ok := porgs.SiteConfig.Text[lang][key]
+			if ok {
+				return val
+			}
+			return ""
 		}
-		trlx["en"] = OrgProps{Name: org.Name}
+		for k, v := range indexOfNameByLang {
+			lang := strings.ToLower(k)
+			name := rec[v] + " " + orgTypeNameAtLevel(lang, level)
+			trlx[lang] = OrgProps{Name: strings.TrimSpace(name)}
+		}
+		trlx["en"] = OrgProps{Name: org.Name + " " + orgTypeNameAtLevel("en", level)}
 		org.Trlx = trlx
 
 		orgs = append(orgs, org)

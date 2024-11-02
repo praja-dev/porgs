@@ -20,7 +20,7 @@ type Org struct {
 	// SequenceID is the sequence number of this organization within its parent
 	SequenceID  int64
 	Source      int64
-	Type        int64
+	TypeID      int64
 	ExternalID  string
 	ExternalSID string
 	Name        string

@@ -100,7 +100,7 @@ func GetSubOrgs(ctx context.Context, id int64) ([]Org, error) {
 			ParentID:    stmt.GetInt64("parent"),
 			SequenceID:  stmt.GetInt64("sid"),
 			Source:      stmt.GetInt64("source"),
-			Type:        stmt.GetInt64("type"),
+			TypeID:      stmt.GetInt64("type"),
 			ExternalID:  stmt.GetText("external_id"),
 			ExternalSID: stmt.GetText("external_sid"),
 			Name:        stmt.GetText("name"),
@@ -161,7 +161,7 @@ func GetOrg(ctx context.Context, id int64) (Org, error) {
 		ParentID:    stmt.GetInt64("parent"),
 		SequenceID:  stmt.GetInt64("sid"),
 		Source:      stmt.GetInt64("source"),
-		Type:        stmt.GetInt64("type"),
+		TypeID:      stmt.GetInt64("type"),
 		ExternalID:  stmt.GetText("external_id"),
 		ExternalSID: stmt.GetText("external_sid"),
 		Name:        stmt.GetText("name"),
@@ -219,7 +219,7 @@ func SaveOrg(org Org) error {
 	stmt.BindInt64(3, org.ParentID)
 	stmt.BindInt64(4, org.SequenceID)
 	stmt.BindInt64(5, 0)
-	stmt.BindInt64(6, org.Type)
+	stmt.BindInt64(6, org.TypeID)
 	stmt.BindText(7, org.ExternalID)
 	stmt.BindText(8, org.ExternalSID)
 	stmt.BindText(9, org.Name)
