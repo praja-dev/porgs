@@ -17,20 +17,22 @@ within community and government organizations.
 
 On UNIX inspired systems:
 ```shell
-cd ~/src
+mkdir ~/praja-dev
+cd ~/praja-dev
 git clone https://github.com/praja-dev/porgs.git
 git clone https://github.com/praja-dev/lk-data.git
-cd ~/src/porgs
-go run ./cmd/porgs --load=~/lk-data/admin
+cd ~/praja-dev/porgs
+go run ./cmd/porgs --load=~/praja-dev/lk-data/admin
 ```
 
 On Windows:
 ```shell
-cd %USERPROFILE%\src
+mkdir %USERPROFILE%\praja-dev
+cd %USERPROFILE%\praja-dev
 git clone https://github.com/praja-dev/porgs.git
 git clone https://github.com/praja-dev/lk-data.git
-cd %USERPROFILE%\src\porgs
-go run .\cmd\porgs --load=%USERPROFILE%\lk-data\admin
+cd %USERPROFILE%\praja-dev\porgs
+go run .\cmd\porgs --load=%USERPROFILE%\praja-dev\lk-data\admin
 ```
 
 Open http://localhost:8642 on a web browser.
@@ -68,3 +70,4 @@ Overall design goals:
 - **Simple to develop**: The entire system should be understandable by a single person.
 - **Simple to maintain**: The system should deploy as a single binary with no external dependencies.
 - **Simple to extend**: Features should be implemented as plugins atop a core system that handles essentials.
+  
