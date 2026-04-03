@@ -11,7 +11,13 @@ application {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
+}
+
+ktor {
+    docker {
+        jreVersion.set(JavaVersion.VERSION_25)
+    }
 }
 
 dependencies {
