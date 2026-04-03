@@ -46,7 +46,15 @@ Then, open the default web browser at the server's root URL
 open http://localhost:8080 
 ```
 
+Clean and do a full build:
+
+```shell
+./gradlew clean
+./gradlew build
+```
+
 ## Deploy
+
 
 Build a fat JAR that includes all that is needed:
 
