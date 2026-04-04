@@ -4,3 +4,8 @@ ktor:
       - dev.praja.ApplicationKt.bootstrap
   deployment:
     port: 8080
+
+app:
+  name: "Praja Organizations"
+  shortName: "PORGS"
+  version: "0.0.1"

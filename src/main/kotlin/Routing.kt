@@ -6,13 +6,15 @@ import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
 
 fun Application.configureRouting() {
+    val appConfig = attributes[AppConfigKey]
+
     routing {
         staticResources("/assets", "assets")
         staticResources("/css", "css")
         staticResources("/javascript", "javascript")
 
         get("/") {
-            call.respondTemplate("index", mapOf("message" to "porgs: 0.0.1"))
+            call.respondTemplate("index", mapOf("appConfig" to appConfig))
         }
     }
 }

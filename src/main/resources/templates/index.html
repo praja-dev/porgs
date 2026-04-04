@@ -11,6 +11,9 @@
     <script src="/javascript/index.js"></script>
 </head>
 <body>
-<div class="title" th:text="${message}">App Short Name</div>
+<div class="title" th:text="${appConfig.shortName}">App Short Name</div>
+<div class="subtitle" th:text="${appConfig.name}">Name</div>
+<div class="footnote" th:text="${appConfig.version}">Version</div>
+
 </body>
 </html>

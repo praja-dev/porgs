@@ -2,13 +2,29 @@ package dev.praja
 
 import io.ktor.server.application.*
 import io.ktor.server.thymeleaf.*
+import io.ktor.util.*
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
+
+data class AppConfig(
+    val name: String,
+    val shortName: String,
+    val version: String,
+)
+
+val AppConfigKey = AttributeKey<AppConfig>("AppConfig")
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
 fun Application.bootstrap() {
+    val appConfig = AppConfig(
+        name = environment.config.property("app.name").getString(),
+        shortName = environment.config.property("app.shortName").getString(),
+        version = environment.config.property("app.version").getString()
+    )
+    attributes.put(AppConfigKey, appConfig)
+
     install(Thymeleaf) {
         setTemplateResolver(ClassLoaderTemplateResolver().apply {
             prefix = "templates/"
