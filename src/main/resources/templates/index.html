@@ -3,13 +3,13 @@
 <head>
     <title>PORGS</title>
 
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" sizes="any">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" th:href="@{|~/assets/favicon.ico?v=${appConfig.version}|}" sizes="any}">
+    <link rel="icon" type="image/svg+xml" th:href="@{|~/assets/favicon.svg?v=${appConfig.version}|}">
+    <link rel="apple-touch-icon" th:href="@{|~/assets/apple-touch-icon.png?v=${appConfig.version}|}">
 
-    <link rel="stylesheet" href="/css/index.css">
-    <script type="module" src="/javascript/lib/datastar.js"></script>
-    <script src="/javascript/index.js"></script>
+    <link rel="stylesheet" th:href="@{|~/css/index.css?v=${appConfig.version}|}">
+    <script type="module" th:src="@{|~/javascript/lib/datastar.js?v=${appConfig.version}|}"></script>
+    <script th:src="@{|~/javascript/index.js?v=${appConfig.version}|}"></script>
 </head>
 <body>
 <div class="title" th:text="${appConfig.shortName}">App Short Name</div>
