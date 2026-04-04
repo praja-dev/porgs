@@ -28,6 +28,12 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+
+    constraints {
+        implementation("io.netty:netty-codec-http2:4.2.12.Final") {
+            because("fixes CVE-2026-33870 found in 4.2.9.Final")
+        }
+    }
 }
 
 tasks.withType<JavaExec> {
