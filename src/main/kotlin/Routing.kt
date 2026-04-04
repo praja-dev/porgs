@@ -7,6 +7,7 @@ import io.ktor.server.thymeleaf.*
 
 fun Application.configureRouting() {
     routing {
+        staticResources("/assets", "assets")
         staticResources("/css", "css")
         staticResources("/javascript", "javascript")
 
