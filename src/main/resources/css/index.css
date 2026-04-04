@@ -23,3 +23,26 @@ body {
     font-family: monospace;
     margin-top: 1rem;
 }
+
+.ds-demo {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ds-count {
+    color: aliceblue;
+    font-size: 1.5rem;
+    font-family: monospace;
+}
+
+.ds-button {
+    background: coral;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+}

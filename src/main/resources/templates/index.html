@@ -8,12 +8,18 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 
     <link rel="stylesheet" href="/css/index.css">
+    <script type="module" src="/javascript/lib/datastar.js"></script>
     <script src="/javascript/index.js"></script>
 </head>
 <body>
 <div class="title" th:text="${appConfig.shortName}">App Short Name</div>
 <div class="subtitle" th:text="${appConfig.name}">Name</div>
 <div class="footnote" th:text="${appConfig.version}">Version</div>
+
+<div class="ds-demo" data-signals="{count: 0}">
+    <div id="ds-count" class="ds-count" data-text="'Datastar: ' + $count"></div>
+    <button class="ds-button" data-on:click="@post('/counter/increment')">Increment</button>
+</div>
 
 </body>
 </html>
