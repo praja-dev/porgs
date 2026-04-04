@@ -1,6 +1,6 @@
 # PORGS
 
-PORGS—Praja Organizations is a web application for managing people, work, and discussions
+PORGS — Praja Organizations is a web application for managing people, work, and discussions
 within community and government organizations.
 
 ## Contribute
@@ -74,3 +74,10 @@ Build a Docker image
 ./gradlew buildImage
 ```
 
+## Scripts
+
+Dump source code into a single Markdown file and open it
+
+```shell
+./scripts/dump_src.kts
+```
