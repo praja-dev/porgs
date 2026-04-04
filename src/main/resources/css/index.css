@@ -1,0 +1,25 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: black;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    color: coral;
+    font-size: 8rem;
+}
+
+.subtitle {
+    color: aliceblue;
+    font-size: 1.3rem;
+}
+
+.footnote {
+    color: darkgoldenrod;
+    font-family: monospace;
+    margin-top: 1rem;
+}
