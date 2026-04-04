@@ -1,4 +1,4 @@
-package dev.praja
+package dev.praja.porgs
 
 import io.ktor.server.application.*
 import io.ktor.server.thymeleaf.*

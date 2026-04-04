@@ -1,7 +1,7 @@
 ktor:
   application:
     modules:
-      - dev.praja.ApplicationKt.bootstrap
+      - dev.praja.porgs.ApplicationKt.bootstrap
   deployment:
     port: 8080
 

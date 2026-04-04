@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.ktor)
 }
 
-group = "dev.praja"
+group = "dev.praja.porgs"
 version = "0.0.1"
 
 application {
