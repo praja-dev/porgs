@@ -1,7 +1,13 @@
 # PORGS
 
-PORGS — Praja Organizations is a web application for managing people, work, and discussions
-within community and government organizations.
+<p>
+  <img src="./src/main/resources/assets/favicon.svg" width="120" alt="PORGS Logo">
+</p>
+
+**PORGS (Praja Organizations)** is an open-source **Modular Civic Framework** designed to manage the people, work, and
+transparency of community and government organizations. From a neighbourhood youth society, a temple, or a school, to a
+village officer division and its administrative hierarchy up to the office of the head of national government, PORGS
+provides the digital scaffolding necessary for collective action.
 
 ## Contribute
 
@@ -54,7 +60,6 @@ Clean and do a full build:
 ```
 
 ## Deploy
-
 
 Build a fat JAR that includes all that is needed:
 
