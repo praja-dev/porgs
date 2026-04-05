@@ -9,13 +9,15 @@ transparency of community and government organizations. From a neighbourhood you
 village officer division and its administrative hierarchy up to the office of the head of national government, PORGS
 provides the digital scaffolding necessary for collective action.
 
-## Contribute
-
-> ⚠ Pull requests are not accepted at this time.
+[Product Specification](docs/product-spec.md) | [Technical Specification](docs/technical-spec.md)
 
 ## Use
 
 > 🚧🚧🚧 Under construction. Not ready for use. 🚧🚧🚧
+
+## Contribute
+
+> ⚠ Pull requests are not accepted at this time.
 
 ## Setup
 
@@ -73,7 +75,7 @@ Run fat JAR:
 java -jar build/libs/porgs-all.jar
 ```
 
-Build a Docker image
+Build a Docker image:
 
 ```shell
 ./gradlew buildImage
@@ -81,7 +83,7 @@ Build a Docker image
 
 ## Scripts
 
-Dump source code into a single Markdown file and open it
+Dump source code into a single Markdown file:
 
 ```shell
 ./scripts/dump_src.kts
