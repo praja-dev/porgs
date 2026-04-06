@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{ layout :: c_head(~{::title},~{}) }">
+    <title>PORGS: Home</title>
+</head>
+<body th:replace="~{layout :: c_body(~{::header},~{::main},~{::footer})}">
+<header>
+    Home Header
+</header>
+<main>
+    <h1>PORGS Home</h1>
+    <p>
+        <a href="/sandbox">To the Sandbox</a>
+    </p>
+</main>
+<footer>
+    Home Footer
+</footer>
+</body>
+</html>

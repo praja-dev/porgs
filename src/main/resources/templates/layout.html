@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>PORGS</title>
+
+<head th:fragment="c_head(title,links)">
+    <title th:replace="${title}">PORGS</title>
 
     <link rel="icon" type="image/x-icon" th:href="|/assets/favicon.ico?v=${appConfig.version}|" sizes="any" data-x="33">
     <link rel="icon" type="image/svg+xml" th:href="|/assets/favicon.svg?v=${appConfig.version}|">
     <link rel="apple-touch-icon" th:href="|/assets/apple-touch-icon.png?v=${appConfig.version}|">
-
     <link rel="stylesheet" th:href="|/css/index.css?v=${appConfig.version}|">
     <script type="module" th:src="|/javascript/lib/datastar.js?v=${appConfig.version}|"></script>
     <script th:src="|/javascript/index.js?v=${appConfig.version}|"></script>
+
+    <th:block th:replace="${links}"/>
 </head>
-<body>
-<div class="title" th:text="${appConfig.shortName}">App Short Name</div>
-<div class="subtitle" th:text="${appConfig.name}">Name</div>
-<div class="footnote" th:text="${appConfig.version}">Version</div>
 
-<div class="ds-demo" data-signals="{count: 0}">
-    <div id="ds-count" class="ds-count" data-text="'Datastar: ' + $count"></div>
-    <button class="ds-button" data-on:click="@post('/counter/increment')">Increment</button>
-</div>
-
+<body th:fragment="c_body(header,main,footer)">
+<header th:replace="${header}">
+    The header content goes here.
+</header>
+<main th:replace="${main}">
+    The main content goes here.
+</main>
+<footer th:replace="${footer}">
+    The footer content goes here.
+</footer>
 </body>
 </html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{ layout :: c_head(~{::title},~{}) }">
+    <title>PORGS: Sandbox</title>
+</head>
+<body th:replace="~{layout :: c_body(~{::header},~{::main},~{::footer})}">
+<header>
+    Sandbox Header
+</header>
+<main>
+    <div class="title" th:text="${appConfig.shortName}">App Short Name</div>
+    <div class="subtitle" th:text="${appConfig.name}">Name</div>
+    <div class="footnote" th:text="${appConfig.version}">Version</div>
+
+    <div class="ds-demo" data-signals="{count: 0}">
+        <div id="ds-count" class="ds-count" data-text="'Datastar: ' + $count"></div>
+        <button class="ds-button" data-on:click="@post('/sandbox/counter/increment')">Increment</button>
+    </div>
+    <p>
+        <a href="/">Back Home</a>
+    </p>
+</main>
+<footer>
+    Sandbox Footer
+</footer>
+</body>
+</html>

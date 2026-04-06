@@ -1,6 +1,7 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: black;
+    font-family: system-ui, Roboto, Arial, sans-serif;
+    font-size: 1.2em;
+    background-color: white;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -8,41 +9,6 @@ body {
     align-items: center;
 }
 
-.title {
-    color: coral;
-    font-size: 8rem;
-}
-
-.subtitle {
-    color: aliceblue;
-    font-size: 1.3rem;
-}
-
-.footnote {
-    color: darkgoldenrod;
-    font-family: monospace;
-    margin-top: 1rem;
-}
-
-.ds-demo {
-    margin-top: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
-.ds-count {
-    color: aliceblue;
-    font-size: 1.5rem;
-    font-family: monospace;
-}
-
-.ds-button {
-    background: coral;
-    border: none;
-    padding: 0.5rem 1.5rem;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 4px;
+main {
+    text-align: center;
 }
