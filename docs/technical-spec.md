@@ -387,10 +387,6 @@ TODO LATER.
 
 ## User Interface
 
-### Templates
-
-TODO LATER.
-
 ### Assets
 
 Static assets (CSS, JavaScript, images, etc.) are served directly by Ktor using the `staticResources()` DSL, which
@@ -417,10 +413,41 @@ Browser **cache busting** is handled via a version query parameter appended to a
 
 ```html
 
-<link rel="stylesheet" th:href="@{|~/css/index.css?v=${appConfig.version}|}">
+<link rel="stylesheet" th:href="|/css/index.css?v=${appConfig.version}|">
 ```
 
 This was chosen over asset fingerprinting due to simplicity.
+
+### Templates
+
+Thymeleaf is configured in `bootstrap()` using a `ClassLoaderTemplateResolver`. Templates live under
+`src/main/resources/templates/` and are addressed by their path relative to that directory, without the `.html` suffix:
+
+A controller renders a template by calling `call.respondTemplate()` with the template name and a model map:
+
+```kotlin
+call.respondTemplate(
+    "home/index",
+    mapOf("appConfig" to appConfig)
+)
+```
+
+The model map's keys become available as Thymeleaf expression variables in the template (e.g. `${appConfig.version}`).
+
+An ordinary template named `layout.html` defines fragments named `c_head` and `c_body` which holds the conent for the
+`<head>` and `<body>` elements of a common web page.
+
+Templates are organized by controller/feature area:
+
+```shell
+src/main/resources/templates/
+  layout.html          ← The common layout
+  fragments.html       ← Fragments for use in other templates — Datastar patch targets, reusable snippets
+  home/
+      index.html       ← GET /
+  sandbox/
+      index.html       ← GET /sandbox
+```
 
 ### Reactivity
 
@@ -434,6 +461,10 @@ The library is manually downloaded when a new version is released.
 curl -L "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.8/bundles/datastar.js" \
   -o src/main/resources/javascript/lib/datastar.js
 ```
+
+To get rid of the "Namespace errors for data-*:* attributes" in IntelliJ IDEA:
+
+- Disable: Settings > Editor > Inspections > XML > Unbound namespace prefix
 
 #### How it works
 
