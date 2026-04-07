@@ -9,3 +9,6 @@ app:
   name: "Praja Organizations"
   shortName: "PORGS"
   version: "0.0.1"
+  db:
+    readPoolSize: 10
+    busyTimeout: 5000

@@ -25,6 +25,13 @@ fun Application.bootstrap() {
     )
     attributes.put(AppConfigKey, appConfig)
 
+    val dbFile = "storage/porgs.db"
+    val readPoolSize = environment.config.property("app.db.readPoolSize").getString().toInt()
+    val busyTimeout = environment.config.property("app.db.busyTimeout").getString().toInt()
+
+    java.io.File(dbFile).parentFile?.mkdirs()
+    AppDatabase.init(dbFile, readPoolSize, busyTimeout)
+
     install(Thymeleaf) {
         setTemplateResolver(ClassLoaderTemplateResolver().apply {
             prefix = "templates/"

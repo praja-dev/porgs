@@ -13,7 +13,7 @@ val outputFile = File(tmpDir, fileName)
 
 // ## Configuration
 val projectRoot = File(".").canonicalFile
-val sourceRoots = listOf("src", "gradle")
+val sourceRoots = listOf("db", "gradle", "src")
 val includeExtensions = setOf(
     "kt", "kts", "yaml", "yml", "html", "kte", "css",
     "js", "json", "toml", "properties", "xml", "sql", "jte"
@@ -27,6 +27,27 @@ val sections = listOf(
         path.endsWith(".gradle.kts") ||
                 path.endsWith(".properties") ||
                 path.endsWith("libs.versions.toml")
+    },
+    Section("Application Bootstrap") { path ->
+        path.endsWith("Application.kt")
+    },
+    Section("Database Connection Setup") { path ->
+        path.endsWith("Database.kt")
+    },
+    Section("Database Schema Migrations") { path ->
+        path.startsWith("db/migrate")
+    },
+    Section("Exposed Tables") { path ->
+        path.startsWith("src/main/kotlin/tables")
+    },
+    Section("Model Classes") { path ->
+        path.startsWith("src/main/kotlin/models")
+    },
+    Section("Routing") { path ->
+        path.endsWith("Routing.kt")
+    },
+    Section("Controllers") { path ->
+        path.startsWith("src/main/kotlin/controllers")
     },
     Section("Stylesheets") { path ->
         path.startsWith("src/main/resources/css")

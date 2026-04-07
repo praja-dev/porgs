@@ -21,14 +21,19 @@ ktor {
 }
 
 dependencies {
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.hikaricp)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.thymeleaf)
     implementation(libs.logback.classic)
+    implementation(libs.sqlite.jdbc)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.ktor.server.test.host)
+
 
     constraints {
         implementation("io.netty:netty-codec-http2:4.2.12.Final") {

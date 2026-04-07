@@ -1,5 +1,6 @@
 package dev.praja.porgs
 
+import dev.praja.porgs.models.Person
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -12,10 +13,13 @@ import kotlinx.serialization.json.jsonPrimitive
 
 fun Route.sandboxController(appConfig: AppConfig) {
     get("/sandbox") {
+        val person = Person.find(1)
+
         call.respondTemplate(
             "sandbox/index",
             mapOf(
                 "appConfig" to appConfig,
+                "person" to person,
             )
         )
     }

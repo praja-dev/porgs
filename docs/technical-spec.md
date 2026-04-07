@@ -28,6 +28,15 @@ the modern web platform.
   eliminate boilerplate, allowing the entire codebase to remain "head-sized."
 - **[Ktor Web Framework](https://ktor.io):** A lightweight, coroutine-based framework where behavior is explicit and
   composable. It avoids the "magic" of larger frameworks, ensuring there are no hidden runtime surprises.
+- [SQLite](https://sqlite.org): Robust single-file in-process database. Used in WAL mode for one writer and multiple
+  readers.
+    - [xerial/sqlite-jdbc driver](https://github.com/xerial/sqlite-jdbc): Bundles native SQLite binaries into a
+      single jar file. Adds about 10MB to the jar file (versus if only the binary for the target platform was bundled)
+      but gives a seamless cross platform experience.
+    - [Exposed](https://www.jetbrains.com/exposed/): Kotlin DSL for database access by JetBrains.
+    - [Hikari Connection Pool](https://github.com/brettwooldridge/HikariCP): One pool for writes (maxConnections = 1)
+      and one pool for
+      reads used.
 - **Netty Engine:** A battle-tested, non-blocking I/O engine. Embedded directly within the application, it eliminates
   the need for external server management.
 - **Gradle with Kotlin DSL:** An industry-standard build tool using the same language as the application. Provides type
@@ -529,6 +538,90 @@ Signals are initialized on a container element and consumed by child elements:
 ```
 
 The `id` on patched elements is required — `datastar-patch-elements` morphs by ID.
+
+## Database
+
+The databas is a single file — `storage/porgs.db`, configured via the `app.db` key in `application.yaml`. The `storage/`
+directory is created automatically on first boot if absent.
+
+### Connection Pools
+
+Two distinct HikariCP pools target the same `.db` file:
+
+- **Writer pool** — `maximumPoolSize = 1`, plain JDBC URL (`jdbc:sqlite:<path>`)
+- **Reader pool** — `maximumPoolSize = 10`, URI-mode URL with `mode=ro` (`jdbc:sqlite:file:<path>?mode=ro&uri=true`)
+
+Read-only enforcement is applied at the SQLite driver level via the URI flag, not via HikariCP's `isReadOnly`, because
+SQLite requires the read-only flag to be set before the connection is opened.
+
+Both pools apply the following pragmas via `connectionInitSql` on every new connection:
+
+- `PRAGMA journal_mode` — `WAL` mode enables concurrent reads during a write operation.
+- `PRAGMA foreign_keys` — `ON` enforces referential integrity.
+- `PRAGMA busy_timeout` — prevents immediate failure under write-contention.
+
+### Concurrency & Dispatchers
+
+All database work is dispatched to `Dispatchers.IO` to prevent blocking Ktor's event loop. Parallelism is capped to
+mirror the pool sizes:
+
+```kotlin
+val readDispatcher = Dispatchers.IO.limitedParallelism(10)
+val writeDispatcher = Dispatchers.IO.limitedParallelism(1)
+```
+
+Two top-level suspend functions provide the public interface for all database access:
+
+```kotlin
+suspend fun <T> dbRead(block: Transaction.() -> T): T
+suspend fun <T> dbWrite(block: Transaction.() -> T): T
+```
+
+### Schema Definition
+
+Table objects are defined in `src/main/kotlin/tables/` using Exposed's `LongIdTable`. This maps Kotlin `Long` to
+SQLite's `INTEGER PRIMARY KEY`, which is an alias for the internal 64-bit `rowid`.
+
+```kotlin
+object People : LongIdTable("people") {
+    val name = varchar("name", 255)
+}
+```
+
+### Query Layer (Active Record Style)
+
+Rather than a repository layer, queries are defined as `suspend` functions directly on each model's `companion object`.
+This mirrors the ActiveRecord calling convention (`Person.find(1)`, `Person.all()`) while remaining idiomatic Kotlin.
+The companion object functions call `dbRead` or `dbWrite` and map `ResultRow` values to the data class within the
+transaction, ensuring connections are returned to the pool promptly.
+
+```kotlin
+data class Person(val id: Long, val name: String) {
+    companion object {
+        suspend fun find(id: Long): Person? = dbRead { }
+        suspend fun all(): List<Person> = dbRead { }
+    }
+}
+```
+
+Model files are located in `src/main/kotlin/models/`. Each model owns its own query functions. Table objects in
+`tables/` are an implementation detail of the model file and are not referenced outside it.
+
+### Migration Workflow
+
+Migrations are plain SQL files in `db/migrate/`. During initial development (pre-0.1.0), a single `_schema.sql` file
+holds the full baseline schema and is updated in place.
+
+From version 0.1.0 onward, migrations will follow a timestamp-prefixed naming convention and applied migration versions
+will be tracked in a `schema_migrations` table in the database itself. Then, the application will refuse to boot if
+unapplied migrations are detected.
+
+### Performance Guidelines
+
+- **Keep transactions small.** Do not perform network calls or heavy computation inside a `dbRead` or `dbWrite` block.
+- **Map inside the transaction.** Convert `ResultRow` to model instances within the transaction block so the connection
+  is released before the data is used.
+- **Datastar integration.** Fetch data in a read transaction and render the Thymeleaf template outside of it.
 
 ## Data Model
 

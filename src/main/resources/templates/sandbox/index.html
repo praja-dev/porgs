@@ -7,6 +7,9 @@
 <body th:replace="~{layout :: c_body(~{::header},~{::main},~{::footer})}">
 <header>
     Sandbox Header
+    <p>
+        Hello <span th:text="${person.name}">First</span>
+    </p>
 </header>
 <main>
     <div class="title" th:text="${appConfig.shortName}">App Short Name</div>
